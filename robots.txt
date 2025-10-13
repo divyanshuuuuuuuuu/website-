@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rasoiyaafood.com/sitemap.xml
+
+# Disallow admin panel
+Disallow: /admin.html
+
+# Allow all other pages
+Allow: /index.html
+Allow: /shop.html
+Allow: /about.html
+Allow: /contact.html
+Allow: /cart.html
+Allow: /checkout.html
+Allow: /privacy-policy.html
+Allow: /terms-conditions.html
+Allow: /refund-cancellation.html
+
+# Allow static assets
+Allow: /styles.css
+Allow: /script.js
+Allow: /logo.png
+Allow: /*.jpg
+Allow: /*.png
+Allow: /*.gif
+Allow: /*.webp
+
+# Crawl delay
+Crawl-delay: 1

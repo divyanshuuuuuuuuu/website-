@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Rasoiyaa Food | Complete Your Order</title>
+    <meta name="description" content="Complete your order securely with Rasoiyaa Food. Multiple payment options available. Fast and secure checkout process.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Razorpay Integration -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
+                        <span class="logo-text">RASOIYAA</span>
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <a href="login.html" id="login-btn" class="btn-login">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </a>
+                    <button id="logout-btn" class="btn-logout" style="display:none">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <a href="shop.html">Shop</a>
+                    <span>/</span>
+                    <span>Checkout</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Checkout Header -->
+        <section class="checkout-header">
+            <div class="container">
+                <div class="checkout-header-content">
+                    <h1>Checkout</h1>
+                    <p>Complete your order securely</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checkout Content -->
+        <section class="checkout-content">
+            <div class="container">
+                <div class="checkout-container">
+                    <!-- Login/Account Section -->
+                    <div class="checkout-section" id="account-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-user"></i> Account Information</h2>
+                        </div>
+                        <div class="section-content">
+                            <div id="login-prompt" class="login-prompt">
+                                <div class="login-prompt-content">
+                                    <h3>Already have an account?</h3>
+                                    <p>Login to speed up your checkout process</p>
+                                    <button id="checkout-login-btn" class="btn btn-primary">Login</button>
+                                </div>
+                                <div class="divider">
+                                    <span>OR</span>
+                                </div>
+                                <div class="guest-checkout">
+                                    <h3>Continue as Guest</h3>
+                                    <p>You can create an account after checkout</p>
+                                    <button id="guest-checkout-btn" class="btn btn-secondary">Continue as Guest</button>
+                                </div>
+                            </div>
+                            <div id="user-info" class="user-info" style="display: none;">
+                                <div class="user-details">
+                                    <h3>Welcome back!</h3>
+                                    <p id="user-contact"></p>
+                                    <button id="change-user-btn" class="btn btn-outline">Change Account</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Information -->
+                    <div class="checkout-section" id="shipping-section" style="display: none;">
+                        <div class="section-header">
+                            <h2><i class="fas fa-shipping-fast"></i> Shipping Information</h2>
+                        </div>
+                        <div class="section-content">
+                            <form class="shipping-form" id="shipping-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="first-name">First Name *</label>
+                                        <input type="text" id="first-name" name="firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="last-name">Last Name *</label>
+                                        <input type="text" id="last-name" name="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Street Address *</label>
+                                    <input type="text" id="address" name="address" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="city">City *</label>
+                                        <input type="text" id="city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="state">State *</label>
+                                        <input type="text" id="state" name="state" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pincode">PIN Code *</label>
+                                        <input type="text" id="pincode" name="pincode" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="delivery-instructions">Delivery Instructions (Optional)</label>
+                                    <textarea id="delivery-instructions" name="deliveryInstructions" rows="3" placeholder="Any special delivery instructions..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="save-address" name="saveAddress">
+                                        <span class="checkmark"></span>
+                                        Save this address for future orders
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="checkout-section" id="payment-section" style="display: none;">
+                        <div class="section-header">
+                            <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
+                        </div>
+                        <div class="section-content">
+                            <div class="payment-notice">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Online Payment Only - No COD Available</span>
+                            </div>
+                            <div class="payment-methods">
+                                <div class="payment-method">
+                                    <input type="radio" id="razorpay" name="paymentMethod" value="razorpay" checked>
+                                    <label for="razorpay" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-credit-card"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>Credit/Debit Card</h3>
+                                                <p>Visa, Mastercard, RuPay</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="payment-method">
+                                    <input type="radio" id="upi" name="paymentMethod" value="upi">
+                                    <label for="upi" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-mobile-alt"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>UPI Payment</h3>
+                                                <p>Google Pay, PhonePe, Paytm</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="payment-method">
+                                    <input type="radio" id="netbanking" name="paymentMethod" value="netbanking">
+                                    <label for="netbanking" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-university"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>Net Banking</h3>
+                                                <p>All major banks</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="payment-method">
+                                    <input type="radio" id="wallet" name="paymentMethod" value="wallet">
+                                    <label for="wallet" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-wallet"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>Digital Wallet</h3>
+                                                <p>Paytm, Mobikwik, Freecharge</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="checkout-section" id="order-summary-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-shopping-bag"></i> Order Summary</h2>
+                        </div>
+                        <div class="section-content">
+                            <div id="order-items" class="order-items">
+                                <!-- Order items will be loaded here -->
+                            </div>
+                            <div class="order-summary">
+                                <div class="summary-row">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">₹0</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Shipping:</span>
+                                    <span id="shipping">₹50</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Tax (GST):</span>
+                                    <span id="tax">₹0</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total:</span>
+                                    <span id="total">₹0</span>
+                                </div>
+                            </div>
+                            <div class="coupon-section">
+                                <div class="coupon-input">
+                                    <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                                    <button id="apply-coupon" class="btn btn-outline">Apply</button>
+                                </div>
+                                <div id="coupon-message" class="coupon-message"></div>
+                            </div>
+                            <div class="checkout-actions">
+                                <button id="place-order-btn" class="btn btn-primary btn-large" disabled>
+                                    <i class="fas fa-lock"></i>
+                                    Place Order Securely
+                                </button>
+                                <p class="security-note">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Your payment information is secure and encrypted
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-cancellation.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +91 8085654059</p>
+                        <p><i class="fas fa-envelope"></i> rasoiyaafood@gmail.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Satna, Madhya Pradesh, India - 485001</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for updates and offers</p>
+                    <form class="footer-newsletter">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rasoiyaa Food. All Rights Reserved.</p>
+                <p>Making fresh | natural and home snacks because we want to experience you a true taste of tradition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <div id="login-step-1">
+                <div class="form-group">
+                    <label for="login-contact">Email Address:</label>
+                    <input type="email" id="login-contact" placeholder="Enter your email address" required>
+                </div>
+                <button id="send-otp-btn" class="btn btn-primary btn-full">Send OTP</button>
+            </div>
+            <div id="login-step-2" style="display: none;">
+                <p>OTP sent to <span id="otp-email"></span></p>
+                <div class="form-group">
+                    <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button id="verify-otp-btn" class="btn btn-primary btn-full">Verify OTP</button>
+                <button id="resend-otp-btn" class="btn btn-secondary btn-full">Resend OTP</button>
+            </div>
+            <div id="login-success" style="display: none;">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Login successful!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="modal">
+        <div class="modal-content">
+            <div class="order-success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Order Placed Successfully!</h2>
+                <div class="order-details">
+                    <p><strong>Order ID:</strong> <span id="order-id"></span></p>
+                    <p><strong>Total Amount:</strong> <span id="order-total"></span></p>
+                    <p><strong>Payment Status:</strong> <span id="payment-status"></span></p>
+                </div>
+                <div class="success-actions">
+                    <a href="index.html" class="btn btn-primary">Continue Shopping</a>
+                    <a href="#" class="btn btn-secondary" id="track-order">Track Order</a>
+                </div>
+                <p class="confirmation-note">
+                    A confirmation email has been sent to your registered email address.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+    <script src="checkout.js"></script>
+</body>
+</html>

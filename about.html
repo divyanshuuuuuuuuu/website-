@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Rasoiyaa Food | Authentic Indian Snacks</title>
+    <meta name="description" content="Learn about Rasoiyaa Food's mission to provide healthy, fresh and homemade snacks. Our story from Satna, Madhya Pradesh.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
+                        <span class="logo-text">RASOIYAA</span>
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html" class="active">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <a href="login.html" id="login-btn" class="btn-login">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </a>
+                    <button id="logout-btn" class="btn-logout" style="display:none">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span>About Us</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- About Hero -->
+        <section class="about-hero">
+            <div class="container">
+                <div class="about-hero-content">
+                    <h1>About Rasoiyaa Food</h1>
+                    <p>Swad Apki Apni Rasoi Ka</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Mission -->
+        <section class="mission-section">
+            <div class="container">
+                <div class="mission-content">
+                    <div class="mission-text">
+                        <h2>Our Mission</h2>
+                        <p>Our mission is to provide healthy, fresh and homemade snacks with high quality, hygiene and at affordable prices.</p>
+                        <p>We believe that everyone deserves to experience the authentic taste of traditional Indian snacks, made with love and care, just like in your own kitchen.</p>
+                    </div>
+                    <div class="mission-image">
+                        <img src="diwali-sweet1.jpg" alt="Our Mission">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Story -->
+        <section class="story-section">
+            <div class="container">
+                <div class="story-content">
+                    <div class="story-image">
+                        <img src="diwali-sweet2.jpg" alt="Our Story">
+                    </div>
+                    <div class="story-text">
+                        <h2>Our Story</h2>
+                        <p>Based in Satna, Madhya Pradesh, our snacks brand specializes in ready-to-fry chips, papads, and ready-to-serve snacks. We prioritize quality and flavor to enrich snacking experiences.</p>
+                        <p>Our varied offerings include banana chips, chivda, murmura, and namak para, ensuring there's something for everyone.</p>
+                        <blockquote>
+                            "Rasoiyaa ek chhoti si soch se shuru hua tha – ghar jaisa swad sab tak pahunchane ka sapna. Aaj hum har snack ke saath wahi ghar ka pyaar, purity aur flavour aapke ghar tak le aate hain. Ye sirf snack nahi, ek experience hai jo har din ko special banata hai."
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Values -->
+        <section class="values-section">
+            <div class="container">
+                <h2 class="section-title">Our Values</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Quality</h3>
+                        <p>We use only the finest ingredients and traditional recipes to ensure every snack meets our high standards.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>Freshness</h3>
+                        <p>All our snacks are made fresh daily using traditional methods to preserve authentic flavors.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Homemade</h3>
+                        <p>Every product is crafted with the same love and care you'd find in a home kitchen.</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <h3>Affordable</h3>
+                        <p>We believe authentic taste shouldn't come at a premium - our snacks are priced for everyone.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Products -->
+        <section class="products-section">
+            <div class="container">
+                <h2 class="section-title">What We Offer</h2>
+                <p class="section-subtitle">Explore our range of delicious snacks that cater to all tastes.</p>
+                <div class="product-categories">
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-cookie-bite"></i>
+                        </div>
+                        <h3>Chips</h3>
+                        <p>Crispy Goodness</p>
+                        <p>Our ready-to-fry chips are made from potatoes and also we have fresh made banana chips.</p>
+                    </div>
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-square"></i>
+                        </div>
+                        <h3>Namak Para</h3>
+                        <p>Traditional Crunch</p>
+                        <p>Perfectly all time fav snacks and crispy goodness, our namak para are a must-try for a savory snack.</p>
+                    </div>
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3>Chivda</h3>
+                        <p>Flavorful Mix</p>
+                        <p>A delicious combination of textures and tastes, our chivda is an irresistible snack.</p>
+                    </div>
+                    <div class="category-item">
+                        <div class="category-icon">
+                            <i class="fas fa-circle"></i>
+                        </div>
+                        <h3>Murmura</h3>
+                        <p>Light and Crunchy</p>
+                        <p>Ideal for snacking at any time, our murmura provides a tasty and healthy option.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team-section">
+            <div class="container">
+                <h2 class="section-title">Meet Our Team</h2>
+                <div class="team-content">
+                    <div class="team-text">
+                        <h3>Passionate About Food</h3>
+                        <p>Our team consists of passionate individuals who share a common love for traditional Indian cuisine and snacks. Each member brings their expertise and dedication to ensure that every product that leaves our kitchen meets the highest standards of quality and taste.</p>
+                        <p>From our master chefs who follow age-old recipes to our quality control team that ensures freshness and hygiene, everyone at Rasoiyaa Food is committed to bringing you the best snacking experience.</p>
+                    </div>
+                    <div class="team-image">
+                        <img src="diwali-sweet1.jpg" alt="Our Team">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact CTA -->
+        <section class="contact-cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Ready to Experience Authentic Taste?</h2>
+                    <p>Order now and taste the difference that tradition makes.</p>
+                    <div class="cta-actions">
+                        <a href="shop.html" class="btn btn-primary btn-large">Shop Now</a>
+                        <a href="contact.html" class="btn btn-secondary btn-large">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-cancellation.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +91 8085654059</p>
+                        <p><i class="fas fa-envelope"></i> rasoiyaafood@gmail.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Satna, Madhya Pradesh, India - 485001</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for updates and offers</p>
+                    <form class="footer-newsletter">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rasoiyaa Food. All Rights Reserved.</p>
+                <p>Making fresh | natural and home snacks because we want to experience you a true taste of tradition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <div id="login-step-1">
+                <div class="form-group">
+                    <label for="login-contact">Email Address:</label>
+                    <input type="email" id="login-contact" placeholder="Enter your email address" required>
+                </div>
+                <button id="send-otp-btn" class="btn btn-primary btn-full">Send OTP</button>
+            </div>
+            <div id="login-step-2" style="display: none;">
+                <p>OTP sent to <span id="otp-email"></span></p>
+                <div class="form-group">
+                    <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button id="verify-otp-btn" class="btn btn-primary btn-full">Verify OTP</button>
+                <button id="resend-otp-btn" class="btn btn-secondary btn-full">Resend OTP</button>
+            </div>
+            <div id="login-success" style="display: none;">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Login successful!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Rasoiyaa Food | Get in Touch</title>
+    <meta name="description" content="Contact Rasoiyaa Food for orders, inquiries, or support. Located in Satna, Madhya Pradesh. Call +91 8085654059 or email rasoiyaafood@gmail.com">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
+                        <span class="logo-text">RASOIYAA</span>
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html" class="active">Contact</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <a href="login.html" id="login-btn" class="btn-login">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </a>
+                    <button id="logout-btn" class="btn-logout" style="display:none">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span>Contact</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Contact Hero -->
+        <section class="contact-hero">
+            <div class="container">
+                <div class="contact-hero-content">
+                    <h1>Get in Touch</h1>
+                    <p>We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Info -->
+        <section class="contact-info-section">
+            <div class="container">
+                <div class="contact-info-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Phone</h3>
+                        <p>+91 8085654059</p>
+                        <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p>rasoiyaafood@gmail.com</p>
+                        <p>We'll respond within 24 hours</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Address</h3>
+                        <p>Satna, Madhya Pradesh</p>
+                        <p>India - 485001</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Business Hours</h3>
+                        <p>Monday - Saturday</p>
+                        <p>9:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form -->
+        <section class="contact-form-section">
+            <div class="container">
+                <div class="contact-form-container">
+                    <div class="form-header">
+                        <h2>Send us a Message</h2>
+                        <p>Have a question, suggestion, or want to place a custom order? We're here to help!</p>
+                    </div>
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject *</label>
+                                <select id="subject" name="subject" required>
+                                    <option value="">Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="order">Order Related</option>
+                                    <option value="custom">Custom Order</option>
+                                    <option value="complaint">Complaint</option>
+                                    <option value="feedback">Feedback</option>
+                                    <option value="partnership">Partnership</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" rows="6" required placeholder="Tell us how we can help you..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="newsletter" name="newsletter">
+                                <span class="checkmark"></span>
+                                Subscribe to our newsletter for updates and offers
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How do I place an order?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>You can place an order through our website by browsing our products, adding them to your cart, and proceeding to checkout. You'll need to create an account and complete the payment process.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What payment methods do you accept?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We accept all major credit/debit cards, UPI payments, net banking, and digital wallets. We do not accept cash on delivery (COD) payments.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>How long does delivery take?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Delivery times vary by location. For Satna and nearby areas, delivery is typically 1-2 days. For other cities, it may take 3-7 days depending on the distance.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>Do you offer custom orders?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! We love creating custom orders for special occasions. Please contact us with your requirements and we'll work with you to create something special.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h3>What is your return policy?</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We offer returns within 7 days of delivery if the product is unopened and in original condition. Please contact us for return instructions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section">
+            <div class="container">
+                <h2 class="section-title">Find Us</h2>
+                <div class="map-container">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Satna, Madhya Pradesh</h3>
+                        <p>India - 485001</p>
+                        <p>We're located in the heart of Satna, serving authentic Indian snacks to customers across India.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-cancellation.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +91 8085654059</p>
+                        <p><i class="fas fa-envelope"></i> rasoiyaafood@gmail.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Satna, Madhya Pradesh, India - 485001</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for updates and offers</p>
+                    <form class="footer-newsletter">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rasoiyaa Food. All Rights Reserved.</p>
+                <p>Making fresh | natural and home snacks because we want to experience you a true taste of tradition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <div id="login-step-1">
+                <div class="form-group">
+                    <label for="login-contact">Email Address:</label>
+                    <input type="email" id="login-contact" placeholder="Enter your email address" required>
+                </div>
+                <button id="send-otp-btn" class="btn btn-primary btn-full">Send OTP</button>
+            </div>
+            <div id="login-step-2" style="display: none;">
+                <p>OTP sent to <span id="otp-email"></span></p>
+                <div class="form-group">
+                    <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button id="verify-otp-btn" class="btn btn-primary btn-full">Verify OTP</button>
+                <button id="resend-otp-btn" class="btn btn-secondary btn-full">Resend OTP</button>
+            </div>
+            <div id="login-success" style="display: none;">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Login successful!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

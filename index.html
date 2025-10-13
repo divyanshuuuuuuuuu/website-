@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasoiyaa Food - Authentic Indian Snacks | Fresh & Natural</title>
+    <meta name="description" content="Discover authentic Indian snacks at Rasoiyaa Food. Fresh, natural, and homemade snacks delivered to your doorstep. Experience the true taste of tradition.">
+    <meta name="keywords" content="Indian snacks, authentic snacks, homemade snacks, fresh snacks, natural snacks, Rasoiyaa Food, traditional snacks, online snacks, murmura, chivda, namak para, banana chips">
+    <meta name="author" content="Rasoiyaa Food">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="en">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Rasoiyaa Food - Authentic Indian Snacks">
+    <meta property="og:description" content="Fresh, natural, and homemade Indian snacks delivered to your doorstep. Experience the true taste of tradition.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rasoiyaafood.com">
+    <meta property="og:image" content="https://rasoiyaafood.com/logo.png">
+    <meta property="og:site_name" content="Rasoiyaa Food">
+    <meta property="og:locale" content="en_IN">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Rasoiyaa Food - Authentic Indian Snacks">
+    <meta name="twitter:description" content="Fresh, natural, and homemade Indian snacks delivered to your doorstep.">
+    <meta name="twitter:image" content="https://rasoiyaafood.com/logo.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://rasoiyaafood.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Rasoiyaa Food",
+        "url": "https://rasoiyaafood.com",
+        "logo": "https://rasoiyaafood.com/logo.png",
+        "description": "Authentic Indian snacks company specializing in fresh, natural, and homemade snacks",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Satna",
+            "addressLocality": "Satna",
+            "addressRegion": "Madhya Pradesh",
+            "postalCode": "485001",
+            "addressCountry": "IN"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+91-8085654059",
+            "contactType": "customer service",
+            "email": "rasoiyaafood@gmail.com"
+        },
+        "sameAs": [
+            "https://facebook.com/rasoiyaafood",
+            "https://instagram.com/rasoiyaafood",
+            "https://twitter.com/rasoiyaafood"
+        ]
+    }
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo -->
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
+                        <span class="logo-text">RASOIYAA</span>
+                    </a>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="index.html" class="active">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="login.html" id="login-btn" class="nav-login-btn">Login</a></li>
+                        <li id="user-menu" class="user-menu" style="display: none;">
+                            <button id="user-menu-btn" class="user-menu-btn">
+                                <i class="fas fa-user-circle"></i>
+                                <span id="user-email-nav">User</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="user-dropdown" class="user-dropdown">
+                                <div class="user-info">
+                                    <p><strong id="user-name-nav">Welcome!</strong></p>
+                                    <p id="user-contact-nav"></p>
+                                </div>
+                                <hr>
+                                <a href="#" id="my-orders-link">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    My Orders
+                                </a>
+                                <a href="#" id="account-settings-link">
+                                    <i class="fas fa-cog"></i>
+                                    Account Settings
+                                </a>
+                                <hr>
+                                <button id="logout-btn" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </button>
+                            </div>
+                        </li>
+                        <li id="logout-menu-item" style="display: none;">
+                            <button id="logout-btn-nav" class="nav-logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+            </nav>
+
+                <!-- User Actions -->
+                <div class="user-actions">
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <!-- Mini Cart Dropdown -->
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Banner -->
+        <section class="hero-banner">
+            <div class="hero-slider">
+                <div class="hero-slide active">
+                    <div class="hero-content">
+                        <div class="container">
+                            <div class="hero-text">
+                                <h1>RASOIYAA</h1>
+                                <h2>Swad Apki Apni Rasoi Ka</h2>
+                                <p>Authentic Indian snacks made with love, delivered fresh to your doorstep</p>
+                                <div class="hero-actions">
+                                    <a href="shop.html" class="btn btn-primary btn-large">Shop Now</a>
+                                    <a href="about.html" class="btn btn-secondary btn-large">Learn More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <img src="diwali-sweet1.jpg" alt="Rasoiyaa Food Hero Image">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Special Offers Banner -->
+            <div class="special-offers">
+                <div class="container">
+                    <div class="offer-banner">
+                        <i class="fas fa-gift"></i>
+                        <span>🎉 Diwali Special: Pre-order sweets now! Limited time offer</span>
+                        <a href="shop.html?category=sweets" class="offer-link">Order Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Info Banner -->
+        <section class="payment-info">
+            <div class="container">
+                <div class="payment-notice">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Online Payment Only - No COD Available</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Categories -->
+        <section class="featured-categories">
+            <div class="container">
+                <h2 class="section-title">Our Snack Categories</h2>
+                <div class="categories-grid">
+                    <div class="category-card">
+                        <div class="category-image">
+                            <img src="murmura.png" alt="Murmura">
+                        </div>
+                        <div class="category-content">
+                            <h3>Murmura</h3>
+                            <p>Light and Crunchy</p>
+                            <a href="shop.html?category=murmura" class="btn btn-outline">Explore</a>
+                        </div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-image">
+                            <img src="golden-crunch.png" alt="Chips">
+                        </div>
+                        <div class="category-content">
+                            <h3>Chips</h3>
+                            <p>Crispy Goodness</p>
+                            <a href="shop.html?category=chips" class="btn btn-outline">Explore</a>
+                        </div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-image">
+                            <img src="coco-kaju-delight.png" alt="Chivda">
+                        </div>
+                        <div class="category-content">
+                            <h3>Chivda</h3>
+                            <p>Flavorful Mix</p>
+                            <a href="shop.html?category=chivda" class="btn btn-outline">Explore</a>
+                        </div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-image">
+                            <img src="diwali-sweet2.jpg" alt="Sweets">
+                        </div>
+                        <div class="category-content">
+                            <h3>Sweets</h3>
+                            <p>Festive Delights</p>
+                            <a href="shop.html?category=sweets" class="btn btn-outline">Explore</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="featured-products">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Products</h2>
+                    <a href="shop.html" class="view-all">View All Products</a>
+                </div>
+                <div class="products-grid" id="featured-products">
+                    <!-- Products will be loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Sellers -->
+        <section class="best-sellers">
+            <div class="container">
+                <h2 class="section-title">Best Sellers</h2>
+                <div class="products-carousel">
+                    <div class="carousel-container">
+                        <div class="carousel-track" id="best-sellers-track">
+                            <!-- Products will be loaded dynamically -->
+                        </div>
+                    </div>
+                    <button class="carousel-btn prev" id="prev-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn next" id="next-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-preview">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2>About Rasoiyaa Food</h2>
+                        <h3>Our Mission</h3>
+                        <p>Our mission is to provide healthy, fresh and homemade snacks with high quality, hygiene and at affordable prices.</p>
+                        <h3>Our Story</h3>
+                        <p>Based in Satna, Madhya Pradesh, our snacks brand specializes in ready-to-fry chips, papads, and ready-to-serve snacks. We prioritize quality and flavor to enrich snacking experiences.</p>
+                        <blockquote>
+                            "Rasoiyaa ek chhoti si soch se shuru hua tha – ghar jaisa swad sab tak pahunchane ka sapna. Aaj hum har snack ke saath wahi ghar ka pyaar, purity aur flavour aapke ghar tak le aate hain."
+                        </blockquote>
+                        <a href="about.html" class="btn btn-primary">Learn More</a>
+                    </div>
+                    <div class="about-image">
+                        <img src="diwali-sweet1.jpg" alt="About Rasoiyaa Food">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Signup -->
+        <section class="newsletter">
+            <div class="container">
+                <div class="newsletter-content">
+                    <h2>Stay Updated</h2>
+                    <p>Get exclusive offers, new product launches, and special discounts delivered to your inbox.</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <input type="email" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-cancellation.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +91 8085654059</p>
+                        <p><i class="fas fa-envelope"></i> rasoiyaafood@gmail.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Satna, Madhya Pradesh, India - 485001</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for updates and offers</p>
+                    <form class="footer-newsletter">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rasoiyaa Food. All Rights Reserved.</p>
+                <p>Making fresh | natural and home snacks because we want to experience you a true taste of tradition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Account Settings Modal -->
+    <div id="account-modal" class="modal">
+        <div class="modal-content account-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Account Settings</h2>
+                <button class="close-account-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="account-tabs">
+                    <button class="tab-btn active" data-tab="profile">Profile</button>
+                    <button class="tab-btn" data-tab="addresses">Addresses</button>
+                    <button class="tab-btn" data-tab="orders">Order History</button>
+                </div>
+
+                <div id="profile-tab" class="tab-content active">
+                    <h3>Profile Information</h3>
+                    <div class="profile-info">
+                        <div class="info-group">
+                            <label>Email Address</label>
+                            <p id="profile-email">user@example.com</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Account Status</label>
+                            <p><span class="status-active">Active Member</span></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Member Since</label>
+                            <p id="member-since">January 2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addresses-tab" class="tab-content">
+                    <h3>Saved Addresses</h3>
+                    <div id="saved-addresses">
+                        <p class="no-addresses">No saved addresses yet.</p>
+                    </div>
+                    <button class="btn btn-primary" id="add-address-btn">
+                        <i class="fas fa-plus"></i> Add New Address
+                    </button>
+                </div>
+
+                <div id="orders-tab" class="tab-content">
+                    <h3>Order History</h3>
+                    <div id="order-history">
+                        <p class="no-orders">No orders found.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Form Modal -->
+    <div id="address-modal" class="modal">
+        <div class="modal-content address-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-map-marker-alt"></i> Add Address</h2>
+                <button class="close-address-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="address-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="addr-first-name">First Name *</label>
+                            <input type="text" id="addr-first-name" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addr-last-name">Last Name *</label>
+                            <input type="text" id="addr-last-name" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addr-phone">Phone Number *</label>
+                        <input type="tel" id="addr-phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addr-address">Street Address *</label>
+                        <input type="text" id="addr-address" name="address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="addr-city">City *</label>
+                            <input type="text" id="addr-city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addr-state">State *</label>
+                            <input type="text" id="addr-state" name="state" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addr-pincode">PIN Code *</label>
+                            <input type="text" id="addr-pincode" name="pincode" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="addr-default" name="isDefault">
+                            <span class="checkmark"></span>
+                            Set as default address
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddressModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Invoice Modal -->
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content invoice-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-receipt"></i> Order Invoice</h2>
+                <div class="invoice-actions">
+                    <button class="btn btn-outline btn-sm" onclick="printInvoice()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="close-invoice-modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="invoice-header">
+                    <div class="company-info">
+                        <h3>RASOIYAA FOOD</h3>
+                        <p>Satna, Madhya Pradesh, India - 485001</p>
+                        <p>Phone: +91 8085654059</p>
+                        <p>Email: rasoiyaafood@gmail.com</p>
+                    </div>
+                    <div class="invoice-details">
+                        <h4>INVOICE</h4>
+                        <p><strong>Invoice #:</strong> <span id="invoice-number">RAS123456</span></p>
+                        <p><strong>Date:</strong> <span id="invoice-date">Jan 15, 2025</span></p>
+                        <p><strong>Order ID:</strong> <span id="invoice-order-id">RAS123456</span></p>
+                    </div>
+                </div>
+
+                <div class="billing-info">
+                    <div class="billing-to">
+                        <h4>Bill To:</h4>
+                        <p id="billing-name">John Doe</p>
+                        <p id="billing-address">123 Main St, City, State - 123456</p>
+                        <p id="billing-phone">+91 9876543210</p>
+                        <p id="billing-email">john@example.com</p>
+                    </div>
+                </div>
+
+                <div class="invoice-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-items">
+                            <!-- Items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="invoice-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="invoice-subtotal">₹0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span id="invoice-shipping">₹50</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (GST 18%):</span>
+                        <span id="invoice-tax">₹0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span><strong>Total Amount:</strong></span>
+                        <span id="invoice-total"><strong>₹0</strong></span>
+                    </div>
+                </div>
+
+                <div class="invoice-footer">
+                    <div class="payment-info">
+                        <h4>Payment Information</h4>
+                        <p><strong>Payment Method:</strong> <span id="payment-method">Online Payment</span></p>
+                        <p><strong>Payment Status:</strong> <span id="payment-status">Paid</span></p>
+                        <p><strong>Transaction ID:</strong> <span id="transaction-id">TXN123456789</span></p>
+                    </div>
+
+                    <div class="thank-you">
+                        <p>Thank you for shopping with Rasoiyaa Food!</p>
+                        <p>We hope you enjoy our authentic Indian snacks.</p>
+                        <p>For any queries, contact us at rasoiyaafood@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Tracking Modal -->
+    <div id="tracking-modal" class="modal">
+        <div class="modal-content tracking-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-truck"></i> Order Tracking</h2>
+                <button class="close-tracking-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tracking-info">
+                    <div class="order-details">
+                        <h3>Order #<span id="track-order-id">RAS123456</span></h3>
+                        <p>Placed on <span id="track-order-date">Jan 15, 2025</span></p>
+                    </div>
+
+                    <div class="tracking-timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Order Confirmed</h4>
+                                <p>Your order has been confirmed and payment processed.</p>
+                                <span class="timeline-date">Jan 15, 2025 10:30 AM</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item completed">
+                            <div class="timeline-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Order Packed</h4>
+                                <p>Your order has been carefully packed and prepared for shipping.</p>
+                                <span class="timeline-date">Jan 16, 2025 2:15 PM</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item active">
+                            <div class="timeline-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Out for Delivery</h4>
+                                <p>Your order is on the way! Expected delivery by tomorrow.</p>
+                                <span class="timeline-date">Jan 17, 2025 9:00 AM</span>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Delivered</h4>
+                                <p>Your order will be delivered to your address.</p>
+                                <span class="timeline-date">Expected: Jan 18, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-info">
+                        <h4>Delivery Information</h4>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Carrier:</label>
+                                <span>Delhivery</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Tracking ID:</label>
+                                <span id="tracking-id">DLV1234567890</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Estimated Delivery:</label>
+                                <span id="est-delivery">Jan 18, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content login-modal-content">
+            <div class="login-header">
+                <div class="login-logo">
+                    <img src="logo.png" alt="Rasoiyaa Food" class="login-logo-img">
+                    <h1>RASOIYAA</h1>
+                </div>
+                <button class="close-login-modal">&times;</button>
+            </div>
+
+            <div class="login-progress">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <span>Email</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span>Verify</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span>Done</span>
+                </div>
+            </div>
+
+            <div id="login-step-1" class="login-step active">
+                <div class="step-content">
+                    <h2>Welcome Back!</h2>
+                    <p>Enter your email address to receive a secure login code</p>
+
+                    <div class="form-group">
+                        <label for="login-contact">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="login-contact" placeholder="your.email@example.com" required>
+                        <div class="input-error" id="email-error"></div>
+                    </div>
+
+                    <button id="send-otp-btn" class="btn-login-primary" onclick="sendOTP()">
+                        <span class="btn-text">Send Login Code</span>
+                        <div class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+
+                    <div class="login-footer">
+                        <p>🔒 Your information is secure and encrypted</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="login-step-2" class="login-step">
+                <div class="step-content">
+                    <h2>Check Your Email</h2>
+                    <p>We've sent a 6-digit code to <strong id="otp-email-display"></strong></p>
+
+                    <div class="otp-input-container">
+                        <div class="otp-inputs">
+                            <input type="text" class="otp-input" maxlength="1" data-index="0">
+                            <input type="text" class="otp-input" maxlength="1" data-index="1">
+                            <input type="text" class="otp-input" maxlength="1" data-index="2">
+                            <input type="text" class="otp-input" maxlength="1" data-index="3">
+                            <input type="text" class="otp-input" maxlength="1" data-index="4">
+                            <input type="text" class="otp-input" maxlength="1" data-index="5">
+                        </div>
+                        <input type="hidden" id="login-otp">
+                    </div>
+
+                    <div class="otp-timer">
+                        <p>Code expires in <span id="otp-timer">05:00</span></p>
+                    </div>
+
+                    <button id="verify-otp-btn" class="btn-login-primary">
+                        <span class="btn-text">Verify Code</span>
+                        <div class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+
+                    <button id="resend-otp-btn" class="btn-login-secondary">
+                        <span class="btn-text">Didn't receive code? Resend</span>
+                        <div class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="login-step-3" class="login-step">
+                <div class="step-content success-step">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2>Login Successful!</h2>
+                    <p>Welcome to Rasoiyaa Food. You can now start shopping!</p>
+
+                    <div class="account-info" style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin: 1rem 0; text-align: center;">
+                        <h3 style="color: #333; margin-bottom: 0.5rem; font-size: 1.1rem;">Your Account</h3>
+                        <p style="color: #666; margin: 0;"><strong>Email:</strong> <span id="user-email-display"></span></p>
+                        <p style="color: #666; margin: 0.5rem 0 0;"><strong>Status:</strong> <span style="color: #27ae60;">Active Member</span></p>
+                    </div>
+
+                    <div class="success-actions">
+                        <button id="continue-shopping-btn" class="btn-login-primary">Continue Shopping</button>
+                        <button id="go-to-cart-btn" class="btn-login-secondary">View Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+</html>

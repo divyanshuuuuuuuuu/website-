@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Rasoiyaa Food | Authentic Indian Snacks</title>
+    <meta name="description" content="Shop authentic Indian snacks from Rasoiyaa Food. Browse our collection of murmura, chivda, chips, and festive sweets. Fresh, homemade snacks delivered to your doorstep.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header (Same as index.html) -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
+                        <span class="logo-text">RASOIYAA</span>
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html" class="active">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <a href="login.html" id="login-btn" class="btn-login">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </a>
+                    <button id="logout-btn" class="btn-logout" style="display:none">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span>Shop</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Shop Header -->
+        <section class="shop-header">
+            <div class="container">
+                <div class="shop-header-content">
+                    <h1>Our Products</h1>
+                    <p>Discover our range of authentic Indian snacks made with love and traditional recipes</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters and Sorting -->
+        <section class="shop-filters">
+            <div class="container">
+                <div class="filters-container">
+                    <div class="filters-left">
+                        <button class="filter-toggle" id="filter-toggle">
+                            <i class="fas fa-filter"></i>
+                            Filters
+                        </button>
+                        <div class="filter-count" id="filter-count">All Products</div>
+                    </div>
+                    <div class="filters-right">
+                        <div class="sort-container">
+                            <label for="sort-select">Sort by:</label>
+                            <select id="sort-select">
+                                <option value="default">Default</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name A-Z</option>
+                                <option value="newest">Newest First</option>
+                                <option value="popular">Most Popular</option>
+                            </select>
+                        </div>
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Sidebar -->
+        <section class="filters-sidebar" id="filters-sidebar">
+            <div class="container">
+                <div class="filters-content">
+                    <div class="filter-section">
+                        <h3>Categories</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" value="murmura" class="category-filter">
+                                <span>Murmura</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="chips" class="category-filter">
+                                <span>Chips</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="chivda" class="category-filter">
+                                <span>Chivda</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="sweets" class="category-filter">
+                                <span>Sweets</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="namak-para" class="category-filter">
+                                <span>Namak Para</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h3>Price Range</h3>
+                        <div class="price-range">
+                            <input type="range" id="price-min" min="0" max="500" value="0">
+                            <input type="range" id="price-max" min="0" max="500" value="500">
+                            <div class="price-display">
+                                <span>₹<span id="price-min-display">0</span></span>
+                                <span>₹<span id="price-max-display">500</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h3>Dietary Preferences</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" value="vegetarian" class="diet-filter">
+                                <span>Vegetarian</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="vegan" class="diet-filter">
+                                <span>Vegan</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="gluten-free" class="diet-filter">
+                                <span>Gluten Free</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h3>Availability</h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" value="in-stock" class="availability-filter">
+                                <span>In Stock</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" value="pre-order" class="availability-filter">
+                                <span>Pre-order</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" id="apply-filters">Apply Filters</button>
+                        <button class="btn btn-secondary" id="clear-filters">Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products-section">
+            <div class="container">
+                <div class="products-container">
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be loaded dynamically -->
+                    </div>
+                    <div class="products-list" id="products-list" style="display: none;">
+                        <!-- List view will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </div>
+
+                <!-- No Results -->
+                <div class="no-results" id="no-results" style="display: none;">
+                    <div class="no-results-content">
+                        <i class="fas fa-search"></i>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                        <button class="btn btn-primary" id="reset-search">Reset Search</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="newsletter">
+            <div class="container">
+                <div class="newsletter-content">
+                    <h2>Stay Updated</h2>
+                    <p>Get exclusive offers, new product launches, and special discounts delivered to your inbox.</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <input type="email" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Same as index.html) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-cancellation.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +91 8085654059</p>
+                        <p><i class="fas fa-envelope"></i> rasoiyaafood@gmail.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Satna, Madhya Pradesh, India - 485001</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for updates and offers</p>
+                    <form class="footer-newsletter">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rasoiyaa Food. All Rights Reserved.</p>
+                <p>Making fresh | natural and home snacks because we want to experience you a true taste of tradition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal (Same as index.html) -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <div id="login-step-1">
+                <div class="form-group">
+                    <label for="login-contact">Email Address:</label>
+                    <input type="email" id="login-contact" placeholder="Enter your email address" required>
+                </div>
+                <button id="send-otp-btn" class="btn btn-primary btn-full">Send OTP</button>
+            </div>
+            <div id="login-step-2" style="display: none;">
+                <p>OTP sent to <span id="otp-email"></span></p>
+                <div class="form-group">
+                    <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button id="verify-otp-btn" class="btn btn-primary btn-full">Verify OTP</button>
+                <button id="resend-otp-btn" class="btn btn-secondary btn-full">Resend OTP</button>
+            </div>
+            <div id="login-success" style="display: none;">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Login successful!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
