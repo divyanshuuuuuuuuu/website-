@@ -201,6 +201,180 @@
                 <div class="products-container">
                     <div class="products-grid" id="products-grid">
                         <!-- Products will be loaded dynamically -->
+                        <div class="product-card" data-product-id="masala-murmura">
+                            <div class="product-badge">New</div>
+                            <div class="product-image">
+                                <img src="murmura.png" alt="Masala Murmura" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="btn btn-primary btn-quick-view" onclick="showProductDetails('masala-murmura')">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-title">Masala Murmura</h3>
+                                <p class="product-description">Light and crunchy murmura with traditional masala spices</p>
+                                <div class="product-price">
+                                    <span class="current-price">₹60</span>
+                                    <span class="original-price">₹70</span>
+                                </div>
+                                <div class="product-weight">200g</div>
+                                <div class="product-actions">
+                                    <button class="btn-add-cart" onclick="addToCart('masala-murmura')">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                    <button class="btn-wishlist" onclick="toggleWishlist('masala-murmura')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-product-id="golden-crunch">
+                            <div class="product-badge">Best Seller</div>
+                            <div class="product-image">
+                                <img src="golden-crunch.png" alt="Golden Crunch (Saloni)" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="btn btn-primary btn-quick-view" onclick="showProductDetails('golden-crunch')">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-title">Golden Crunch (Saloni)</h3>
+                                <p class="product-description">Crispy goodness with golden texture and authentic taste</p>
+                                <div class="product-price">
+                                    <span class="current-price">₹130</span>
+                                    <span class="original-price">₹150</span>
+                                </div>
+                                <div class="product-weight">250g</div>
+                                <div class="product-actions">
+                                    <button class="btn-add-cart" onclick="addToCart('golden-crunch')">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                    <button class="btn-wishlist" onclick="toggleWishlist('golden-crunch')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-product-id="coco-kaju-delight">
+                            <div class="product-badge">Popular</div>
+                            <div class="product-image">
+                                <img src="coco-kaju-delight.png" alt="Coco-Kaju Delight (Chivda)" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="btn btn-primary btn-quick-view" onclick="showProductDetails('coco-kaju-delight')">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-title">Coco-Kaju Delight (Chivda)</h3>
+                                <p class="product-description">Flavorful mix of coconut and cashew nuts with traditional spices</p>
+                                <div class="product-price">
+                                    <span class="current-price">₹110</span>
+                                    <span class="original-price">₹130</span>
+                                </div>
+                                <div class="product-weight">300g</div>
+                                <div class="product-actions">
+                                    <button class="btn-add-cart" onclick="addToCart('coco-kaju-delight')">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                    <button class="btn-wishlist" onclick="toggleWishlist('coco-kaju-delight')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-product-id="diwali-sweets">
+                            <div class="product-badge">Pre-order</div>
+                            <div class="product-image">
+                                <img src="diwali-sweet2.jpg" alt="Diwali Sweets Collection" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="btn btn-primary btn-quick-view" onclick="showProductDetails('diwali-sweets')">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-title">Diwali Sweets Collection</h3>
+                                <p class="product-description">Festive sweets collection for special celebrations</p>
+                                <div class="product-price">
+                                    <span class="current-price">₹299</span>
+                                    <span class="original-price">₹350</span>
+                                </div>
+                                <div class="product-weight">500g</div>
+                                <div class="product-actions">
+                                    <button class="btn-add-cart" onclick="addToCart('diwali-sweets')">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                    <button class="btn-wishlist" onclick="toggleWishlist('diwali-sweets')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                                <div class="out-of-stock">Out of Stock</div>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-product-id="banana-chips">
+                            <div class="product-badge">Fresh</div>
+                            <div class="product-image">
+                                <img src="golden-crunch.png" alt="Banana Chips" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="btn btn-primary btn-quick-view" onclick="showProductDetails('banana-chips')">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-title">Banana Chips</h3>
+                                <p class="product-description">Fresh made banana chips with authentic taste</p>
+                                <div class="product-price">
+                                    <span class="current-price">₹80</span>
+                                    <span class="original-price">₹90</span>
+                                </div>
+                                <div class="product-weight">200g</div>
+                                <div class="product-actions">
+                                    <button class="btn-add-cart" onclick="addToCart('banana-chips')">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                    <button class="btn-wishlist" onclick="toggleWishlist('banana-chips')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-product-id="namak-para">
+                            <div class="product-badge">Traditional</div>
+                            <div class="product-image">
+                                <img src="murmura.png" alt="Namak Para" loading="lazy">
+                                <div class="product-overlay">
+                                    <button class="btn btn-primary btn-quick-view" onclick="showProductDetails('namak-para')">
+                                        <i class="fas fa-eye"></i> Quick View
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <h3 class="product-title">Namak Para</h3>
+                                <p class="product-description">Traditional crunchy namak para, perfect anytime snack</p>
+                                <div class="product-price">
+                                    <span class="current-price">₹90</span>
+                                    <span class="original-price">₹100</span>
+                                </div>
+                                <div class="product-weight">250g</div>
+                                <div class="product-actions">
+                                    <button class="btn-add-cart" onclick="addToCart('namak-para')">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                    <button class="btn-wishlist" onclick="toggleWishlist('namak-para')">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="products-list" id="products-list" style="display: none;">
                         <!-- List view will be loaded dynamically -->
