@@ -74,6 +74,8 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-light);
             transition: var(--transition);
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
 
         .checkout-step:hover, .summary-card:hover {
@@ -87,6 +89,7 @@
             justify-content: center;
             gap: 2rem;
             margin-bottom: 3rem;
+            padding: 0 1rem;
         }
 
         .step {
@@ -98,6 +101,7 @@
             border-radius: var(--border-radius);
             transition: var(--transition);
             min-width: 120px;
+            text-align: center;
         }
 
         .step-number {
@@ -134,13 +138,14 @@
         /* Form Styling */
         .form-field input, .form-field select {
             width: 100%;
-            padding: 1rem;
+            padding: 1rem 1.2rem;
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 1rem;
             transition: var(--transition);
+            margin-bottom: 0.5rem;
         }
 
         .form-field input:focus, .form-field select:focus {
@@ -154,6 +159,7 @@
             font-weight: 600;
             margin-bottom: 0.5rem;
             display: block;
+            font-size: 0.95rem;
         }
 
         /* Button Animations */
@@ -168,6 +174,12 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            font-size: 1rem;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .btn::before {
@@ -227,6 +239,7 @@
             align-items: center;
             gap: 1rem;
             position: relative;
+            margin-bottom: 1rem;
         }
 
         .payment-method:hover {
@@ -314,6 +327,7 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
+            margin: 1.5rem 0;
         }
 
         .security-item {
@@ -322,10 +336,15 @@
             gap: 0.5rem;
             color: rgba(255, 255, 255, 0.9);
             font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .security-item i {
             color: #4facfe;
+            font-size: 1rem;
         }
 
         /* Loading Animation */
@@ -370,6 +389,16 @@
             }
         }
 
+        /* Step Actions */
+        .step-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .checkout-layout {
@@ -384,6 +413,24 @@
             .step-line {
                 width: 3px;
                 height: 40px;
+            }
+
+            .step-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .checkout-step, .summary-card {
+                padding: 1.5rem;
+            }
+
+            .security-features {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
