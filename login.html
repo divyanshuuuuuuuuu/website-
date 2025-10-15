@@ -175,7 +175,8 @@
             color: #667eea;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 15px 20px;
             border: 2px solid #e0e0e0;
@@ -185,7 +186,13 @@
             box-sizing: border-box;
         }
 
-        .form-group input:focus {
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -422,6 +429,11 @@
                     <div class="progress-line"></div>
                     <div class="progress-step" data-step="3">
                         <div class="step-number">3</div>
+                        <span>Profile</span>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-number">4</div>
                         <span>Done</span>
                     </div>
                 </div>
@@ -496,12 +508,99 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <h2>Login Successful!</h2>
-                        <p>Welcome to Rasoiyaa Food. You can now start shopping!</p>
+                        <p>Welcome to Rasoiyaa Food. Let's complete your profile to get started!</p>
+
+                        <div class="account-info" style="background: #f8f9fa; padding: 1rem; border-radius: 10px; margin: 1rem 0; text-align: center;">
+                            <h3 style="color: #333; margin-bottom: 0.5rem; font-size: 1.1rem;">Your Account</h3>
+                            <p style="color: #666; margin: 0;"><strong>Email:</strong> <span id="user-email-display"></span></p>
+                            <p style="color: #666; margin: 0.5rem 0 0;"><strong>Status:</strong> <span style="color: #27ae60;">Active Member</span></p>
+                        </div>
 
                         <div class="success-actions">
-                            <button id="continue-shopping-btn" class="btn-login-primary">Continue Shopping</button>
-                            <button id="go-to-cart-btn" class="btn-login-secondary">View Cart</button>
+                            <button id="complete-profile-btn" class="btn-login-primary">Complete Profile</button>
+                            <button id="skip-profile-btn" class="btn-login-secondary">Skip for Now</button>
                         </div>
+                    </div>
+                </div>
+
+                <div id="login-step-4" class="login-step">
+                    <div class="step-content">
+                        <h2>Complete Your Profile</h2>
+                        <p>Please provide your basic information to personalize your experience</p>
+
+                        <div class="form-group">
+                            <label for="profile-first-name">
+                                <i class="fas fa-user"></i>
+                                First Name
+                            </label>
+                            <input type="text" id="profile-first-name" placeholder="Enter your first name" required>
+                            <div class="input-error" id="first-name-error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profile-last-name">
+                                <i class="fas fa-user"></i>
+                                Last Name
+                            </label>
+                            <input type="text" id="profile-last-name" placeholder="Enter your last name" required>
+                            <div class="input-error" id="last-name-error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profile-phone">
+                                <i class="fas fa-phone"></i>
+                                Phone Number
+                            </label>
+                            <input type="tel" id="profile-phone" placeholder="Enter your phone number" required>
+                            <div class="input-error" id="phone-error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profile-address">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Address
+                            </label>
+                            <textarea id="profile-address" placeholder="Enter your full address" rows="3" required></textarea>
+                            <div class="input-error" id="address-error"></div>
+                        </div>
+
+                        <div class="form-row" style="display: flex; gap: 15px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="profile-city">
+                                    <i class="fas fa-city"></i>
+                                    City
+                                </label>
+                                <input type="text" id="profile-city" placeholder="City" required>
+                                <div class="input-error" id="city-error"></div>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="profile-state">
+                                    <i class="fas fa-map"></i>
+                                    State
+                                </label>
+                                <input type="text" id="profile-state" placeholder="State" required>
+                                <div class="input-error" id="state-error"></div>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="profile-pincode">
+                                    <i class="fas fa-mail-bulk"></i>
+                                    Pincode
+                                </label>
+                                <input type="text" id="profile-pincode" placeholder="Pincode" required>
+                                <div class="input-error" id="pincode-error"></div>
+                            </div>
+                        </div>
+
+                        <button id="save-profile-btn" class="btn-login-primary">
+                            <span class="btn-text">Save Profile & Continue</span>
+                            <div class="btn-loader" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
+
+                        <button id="back-to-success-btn" class="btn-login-secondary">
+                            <span class="btn-text">Back</span>
+                        </button>
                     </div>
                 </div>
             </div>

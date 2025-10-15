@@ -1,582 +1,570 @@
 // Checkout Page JavaScript
-
-// Global Variables
-let checkoutStep = 1;
-let currentUser = null;
-let orderData = {
-    items: [],
+let currentStep = 1;
+let checkoutData = {
+    customer: {},
     shipping: {},
-    payment: {},
-    total: 0,
-    orderId: null
+    payment: {}
 };
 
-// Cart Management Functions
-function getCartKey() {
-    return currentUser ? `cart_${currentUser}` : 'cart_guest';
-}
-
-function loadCart() {
-    const cartKey = getCartKey();
-    return JSON.parse(localStorage.getItem(cartKey) || '[]');
-}
-
-// Initialize checkout page
 document.addEventListener('DOMContentLoaded', function() {
     initializeCheckout();
-    setupCheckoutEventListeners();
-    loadOrderItems();
-    updateOrderSummary();
+    loadCheckoutItems();
+    updateCheckoutTotals();
 });
 
 function initializeCheckout() {
-    // Check if user is logged in
-    const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
-    if (isLoggedIn) {
-        currentUser = localStorage.getItem('userContact');
-        showUserInfo();
-        proceedToShipping();
-    }
-
-    // Load cart items
-    const cart = loadCart();
-    if (cart.length === 0) {
-        showToast('Your cart is empty. Please add items to proceed.');
-        setTimeout(() => {
-            window.location.href = 'shop.html';
-        }, 2000);
-        return;
-    }
-
-    orderData.items = cart;
-}
-
-function setupCheckoutEventListeners() {
-    // Account section
-    document.getElementById('checkout-login-btn').addEventListener('click', showLoginModal);
-    document.getElementById('guest-checkout-btn').addEventListener('click', proceedAsGuest);
-    document.getElementById('change-user-btn').addEventListener('click', changeUser);
-    
-    // Shipping form
-    document.getElementById('shipping-form').addEventListener('submit', handleShippingSubmit);
-    
-    // Payment methods
-    document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
-        radio.addEventListener('change', updatePaymentMethod);
-    });
-    
-    // Coupon
-    document.getElementById('apply-coupon').addEventListener('click', applyCoupon);
-    document.getElementById('coupon-code').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            applyCoupon();
+    // Pre-fill customer info if logged in
+    if (currentUser) {
+        const profile = JSON.parse(localStorage.getItem(`profile_${currentUser}`) || '{}');
+        if (profile.email) {
+            document.getElementById('email').value = profile.email;
         }
-    });
-    
-    // Place order
-    document.getElementById('place-order-btn').addEventListener('click', placeOrder);
-    
-    // Login modal events
-    document.getElementById('send-otp-btn').addEventListener('click', sendOTP);
-    document.getElementById('verify-otp-btn').addEventListener('click', verifyOTP);
-    document.getElementById('resend-otp-btn').addEventListener('click', resendOTP);
-    
-    // Close modals
-    document.querySelectorAll('.close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', function() {
-            this.closest('.modal').style.display = 'none';
-        });
-    });
-}
-
-function showUserInfo() {
-    const userContact = localStorage.getItem('userContact');
-    document.getElementById('user-contact').textContent = userContact;
-    document.getElementById('login-prompt').style.display = 'none';
-    document.getElementById('user-info').style.display = 'block';
-}
-
-function proceedAsGuest() {
-    document.getElementById('account-section').style.display = 'none';
-    proceedToShipping();
-}
-
-function changeUser() {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('userContact');
-    localStorage.removeItem('sessionToken');
-    
-    document.getElementById('login-prompt').style.display = 'block';
-    document.getElementById('user-info').style.display = 'none';
-    document.getElementById('account-section').style.display = 'block';
-    checkoutStep = 1;
-}
-
-function proceedToShipping() {
-    document.getElementById('account-section').style.display = 'none';
-    document.getElementById('shipping-section').style.display = 'block';
-    checkoutStep = 2;
-    updateCheckoutProgress();
-}
-
-function handleShippingSubmit(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const shippingData = {};
-    
-    for (let [key, value] of formData.entries()) {
-        shippingData[key] = value;
-    }
-    
-    orderData.shipping = shippingData;
-    
-    // Validate shipping data
-    if (validateShippingData(shippingData)) {
-        proceedToPayment();
-    }
-}
-
-function validateShippingData(data) {
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'pincode'];
-    
-    for (let field of requiredFields) {
-        if (!data[field] || data[field].trim() === '') {
-            showToast(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-            return false;
+        if (profile.firstName) {
+            document.getElementById('first-name').value = profile.firstName;
+        }
+        if (profile.lastName) {
+            document.getElementById('last-name').value = profile.lastName;
+        }
+        if (profile.phone) {
+            document.getElementById('phone').value = profile.phone;
         }
     }
-    
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(data.email)) {
-        showToast('Please enter a valid email address');
-        return false;
+}
+
+function nextStep(step) {
+    if (!validateCurrentStep()) return;
+
+    // Save current step data
+    saveStepData(currentStep);
+
+    // Hide current step
+    document.getElementById(`checkout-step-${currentStep}`).classList.remove('active');
+
+    // Update step indicator
+    document.querySelector(`[data-step="${currentStep}"]`).classList.add('completed');
+    document.querySelector(`[data-step="${step}"]`).classList.add('active');
+
+    // Show next step
+    currentStep = step;
+    document.getElementById(`checkout-step-${step}`).classList.add('active');
+
+    // Update progress line
+    updateProgressLine();
+}
+
+function prevStep(step) {
+    // Hide current step
+    document.getElementById(`checkout-step-${currentStep}`).classList.remove('active');
+
+    // Update step indicator
+    document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+    document.querySelector(`[data-step="${step}"]`).classList.add('active');
+
+    // Show previous step
+    currentStep = step;
+    document.getElementById(`checkout-step-${step}`).classList.add('active');
+
+    // Update progress line
+    updateProgressLine();
+}
+
+function updateProgressLine() {
+    const progressLines = document.querySelectorAll('.step-line');
+    progressLines.forEach((line, index) => {
+        if (index < currentStep - 1) {
+            line.classList.add('active');
+        } else {
+            line.classList.remove('active');
+        }
+    });
+}
+
+function validateCurrentStep() {
+    switch (currentStep) {
+        case 1:
+            return validateCustomerInfo();
+        case 2:
+            return validateShippingInfo();
+        case 3:
+            return validatePaymentMethod();
+        case 4:
+            return validateTermsAgreement();
+        default:
+            return true;
     }
-    
-    // Validate phone
-    const phoneRegex = /^[6-9]\d{9}$/;
-    if (!phoneRegex.test(data.phone.replace(/\D/g, ''))) {
-        showToast('Please enter a valid 10-digit phone number');
-        return false;
+}
+
+function validateCustomerInfo() {
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName = document.getElementById('last-name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    let isValid = true;
+
+    // Clear previous errors
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+    if (!firstName) {
+        document.getElementById('first-name-error').textContent = 'First name is required';
+        isValid = false;
     }
-    
-    // Validate PIN code
-    const pincodeRegex = /^[1-9][0-9]{5}$/;
-    if (!pincodeRegex.test(data.pincode)) {
-        showToast('Please enter a valid 6-digit PIN code');
-        return false;
+
+    if (!lastName) {
+        document.getElementById('last-name-error').textContent = 'Last name is required';
+        isValid = false;
     }
-    
+
+    if (!email) {
+        document.getElementById('email-error').textContent = 'Email is required';
+        isValid = false;
+    } else if (!isValidEmail(email)) {
+        document.getElementById('email-error').textContent = 'Please enter a valid email';
+        isValid = false;
+    }
+
+    if (!phone) {
+        document.getElementById('phone-error').textContent = 'Phone number is required';
+        isValid = false;
+    } else if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) {
+        document.getElementById('phone-error').textContent = 'Please enter a valid 10-digit phone number';
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function validateShippingInfo() {
+    const address = document.getElementById('address').value.trim();
+    const city = document.getElementById('city').value.trim();
+    const state = document.getElementById('state').value.trim();
+    const pincode = document.getElementById('pincode').value.trim();
+
+    let isValid = true;
+
+    // Clear previous errors
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+
+    if (!address) {
+        document.getElementById('address-error').textContent = 'Address is required';
+        isValid = false;
+    }
+
+    if (!city) {
+        document.getElementById('city-error').textContent = 'City is required';
+        isValid = false;
+    }
+
+    if (!state) {
+        document.getElementById('state-error').textContent = 'State is required';
+        isValid = false;
+    }
+
+    if (!pincode) {
+        document.getElementById('pincode-error').textContent = 'PIN code is required';
+        isValid = false;
+    } else if (!/^\d{6}$/.test(pincode)) {
+        document.getElementById('pincode-error').textContent = 'Please enter a valid 6-digit PIN code';
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function validatePaymentMethod() {
+    // Razorpay is the only option, so always valid
     return true;
 }
 
-function proceedToPayment() {
-    document.getElementById('shipping-section').style.display = 'none';
-    document.getElementById('payment-section').style.display = 'block';
-    checkoutStep = 3;
-    updateCheckoutProgress();
-    updatePlaceOrderButton();
-}
-
-function updatePaymentMethod() {
-    const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-    orderData.payment.method = selectedMethod;
-    updatePlaceOrderButton();
-}
-
-function applyCoupon() {
-    const couponCode = document.getElementById('coupon-code').value.trim().toUpperCase();
-    const messageDiv = document.getElementById('coupon-message');
-    
-    if (!couponCode) {
-        showToast('Please enter a coupon code');
-        return;
+function validateTermsAgreement() {
+    const termsAgreed = document.getElementById('terms-agree').checked;
+    if (!termsAgreed) {
+        document.getElementById('terms-error').textContent = 'Please agree to the terms and conditions';
+        return false;
     }
-    
-    // Simulate coupon validation
-    const validCoupons = {
-        'WELCOME10': { discount: 10, type: 'percentage' },
-        'SAVE50': { discount: 50, type: 'fixed' },
-        'DIWALI20': { discount: 20, type: 'percentage' }
-    };
-    
-    if (validCoupons[couponCode]) {
-        const coupon = validCoupons[couponCode];
-        let discountAmount = 0;
-        
-        if (coupon.type === 'percentage') {
-            discountAmount = (orderData.total * coupon.discount) / 100;
-        } else {
-            discountAmount = coupon.discount;
-        }
-        
-        orderData.coupon = {
-            code: couponCode,
-            discount: discountAmount,
-            type: coupon.type
-        };
-        
-        messageDiv.innerHTML = `
-            <div class="coupon-success">
-                <i class="fas fa-check-circle"></i>
-                Coupon applied! You saved ₹${discountAmount}
+    return true;
+}
+
+function saveStepData(step) {
+    switch (step) {
+        case 1:
+            checkoutData.customer = {
+                firstName: document.getElementById('first-name').value.trim(),
+                lastName: document.getElementById('last-name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim()
+            };
+            break;
+        case 2:
+            checkoutData.shipping = {
+                address: document.getElementById('address').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                state: document.getElementById('state').value.trim(),
+                pincode: document.getElementById('pincode').value.trim(),
+                billingSame: document.getElementById('billing-same').checked
+            };
+            break;
+        case 3:
+            checkoutData.payment = {
+                method: 'razorpay'
+            };
+            break;
+    }
+}
+
+function loadCheckoutItems() {
+    const checkoutItemsContainer = document.getElementById('checkout-items');
+
+    checkoutItemsContainer.innerHTML = cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+        if (!product) return '';
+
+        return `
+            <div class="checkout-item">
+                <div class="item-image">
+                    <img src="${product.image}" alt="${product.name}">
+                </div>
+                <div class="item-info">
+                    <h4>${product.name}</h4>
+                    <p>₹${product.price} × ${item.quantity}</p>
+                </div>
+                <div class="item-price">
+                    ₹${(product.price * item.quantity).toFixed(2)}
+                </div>
             </div>
         `;
-        
-        updateOrderSummary();
-        showToast(`Coupon applied! You saved ₹${discountAmount}`);
+    }).join('');
+}
+
+function updateCheckoutTotals() {
+    const subtotal = cart.reduce((sum, item) => {
+        const product = products.find(p => p.id === item.id);
+        return sum + (product ? product.price * item.quantity : 0);
+    }, 0);
+
+    // Get shipping based on PIN code
+    const pincode = document.getElementById('pincode')?.value?.trim() || '';
+    let shipping = 0;
+
+    if (subtotal > 500) {
+        shipping = 0; // Free shipping over ₹500
+    } else if (pincode === '485001') {
+        shipping = 30; // Local delivery (Satna)
+    } else if (pincode && pincode.length === 6) {
+        shipping = 60; // Outside local area
     } else {
-        messageDiv.innerHTML = `
-            <div class="coupon-error">
-                <i class="fas fa-times-circle"></i>
-                Invalid coupon code
-            </div>
-        `;
-        showToast('Invalid coupon code');
-    }
-}
-
-function loadOrderItems() {
-    const container = document.getElementById('order-items');
-    const cart = loadCart();
-
-    if (cart.length === 0) {
-        container.innerHTML = '<div class="empty-cart">No items in cart</div>';
-        return;
+        shipping = 50; // Default shipping when no PIN entered
     }
 
-    container.innerHTML = cart.map(item => `
-        <div class="order-item">
-            <div class="item-image">
-                <img src="${item.image}" alt="${item.name}">
-            </div>
-            <div class="item-details">
-                <h4>${item.name}</h4>
-                <p>Quantity: ${item.quantity}</p>
-            </div>
-            <div class="item-price">
-                ₹${item.price * item.quantity}
-            </div>
-        </div>
-    `).join('');
-}
+    const tax = subtotal * 0.18;
+    const discount = 0;
+    const total = subtotal + shipping + tax - discount;
 
-function updateOrderSummary() {
-    const cart = loadCart();
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = 50; // Fixed shipping cost
-    const tax = Math.round(subtotal * 0.18); // 18% GST
-    const couponDiscount = orderData.coupon ? orderData.coupon.discount : 0;
-    const total = subtotal + shipping + tax - couponDiscount;
+    document.getElementById('checkout-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('checkout-shipping').textContent = shipping === 0 ? 'FREE' : `₹${shipping.toFixed(2)}`;
+    document.getElementById('checkout-tax').textContent = `₹${tax.toFixed(2)}`;
+    document.getElementById('checkout-total').textContent = `₹${total.toFixed(2)}`;
 
-    orderData.total = total;
-
-    document.getElementById('subtotal').textContent = `₹${subtotal}`;
-    document.getElementById('shipping').textContent = `₹${shipping}`;
-    document.getElementById('tax').textContent = `₹${tax}`;
-    document.getElementById('total').textContent = `₹${total}`;
-
-    // Update order data
-    orderData.subtotal = subtotal;
-    orderData.shippingCost = shipping;
-    orderData.tax = tax;
-    orderData.couponDiscount = couponDiscount;
-}
-
-function updatePlaceOrderButton() {
-    const button = document.getElementById('place-order-btn');
-    const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
-    const hasShippingData = Object.keys(orderData.shipping).length > 0;
-    const hasPaymentMethod = orderData.payment.method;
-    
-    if ((isLoggedIn || checkoutStep >= 2) && hasShippingData && hasPaymentMethod) {
-        button.disabled = false;
-        button.innerHTML = `
-            <i class="fas fa-lock"></i>
-            Place Order Securely - ₹${orderData.total}
-        `;
+    const discountRow = document.getElementById('checkout-discount-row');
+    if (discount > 0) {
+        document.getElementById('checkout-discount').textContent = `-₹${discount.toFixed(2)}`;
+        discountRow.style.display = 'block';
     } else {
-        button.disabled = true;
-        button.innerHTML = `
-            <i class="fas fa-lock"></i>
-            Complete Required Steps
-        `;
+        discountRow.style.display = 'none';
+    }
+
+    // Update shipping info display
+    updateShippingInfo(pincode, shipping);
+
+    // Add event listener for PIN code changes to update shipping
+    const pincodeInput = document.getElementById('pincode');
+    if (pincodeInput && !pincodeInput.hasAttribute('data-listener-added')) {
+        pincodeInput.addEventListener('input', function() {
+            updateCheckoutTotals();
+        });
+        pincodeInput.setAttribute('data-listener-added', 'true');
     }
 }
 
-function updateCheckoutProgress() {
-    // This would update a progress indicator if we had one
-    console.log(`Checkout step: ${checkoutStep}`);
+function updateShippingInfo(pincode, shipping) {
+    const shippingInfo = document.getElementById('shipping-info');
+    if (!shippingInfo) return;
+
+    let shippingText = '';
+    if (shipping === 0) {
+        shippingText = 'FREE shipping on orders over ₹500';
+    } else if (pincode === '485001') {
+        shippingText = '₹30 local delivery (Satna area)';
+    } else if (pincode.length === 6) {
+        shippingText = '₹60 standard delivery';
+    } else {
+        shippingText = '₹50 standard delivery';
+    }
+
+    shippingInfo.textContent = shippingText;
 }
 
-function placeOrder() {
-    if (!validateOrderData()) {
-        return;
-    }
-    
-    // Generate order ID
-    orderData.orderId = 'RAS' + Date.now();
-    
+function initiateRazorpayPayment() {
+    if (!validateCurrentStep()) return;
+
+    // Save final step data
+    saveStepData(currentStep);
+
     // Show loading state
-    const button = document.getElementById('place-order-btn');
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    button.disabled = true;
-    
-    // Process payment
-    processPayment()
-        .then(paymentResult => {
-            if (paymentResult.success) {
-                // Save order to backend
-                saveOrder()
-                    .then(orderResult => {
-                        if (orderResult.success) {
-                            // Clear cart
-                            const cartKey = getCartKey();
-                            localStorage.removeItem(cartKey);
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    const btnText = placeOrderBtn.querySelector('.btn-text');
+    const btnLoader = placeOrderBtn.querySelector('.btn-loader');
 
-                            // Show success modal
-                            showOrderSuccess(orderResult.orderId, orderData.total);
-                            
-                            // Send confirmation email
-                            sendOrderConfirmation(orderData);
-                        } else {
-                            throw new Error('Failed to save order');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Order save error:', error);
-                        showToast('Order placed but there was an issue saving details. Please contact support.');
-                        showOrderSuccess(orderData.orderId, orderData.total);
-                    });
-            } else {
-                throw new Error(paymentResult.message || 'Payment failed');
-            }
-        })
-        .catch(error => {
-            console.error('Payment error:', error);
-            showToast('Payment failed. Please try again.');
-            button.innerHTML = originalText;
-            button.disabled = false;
-        });
-}
+    btnText.textContent = 'Processing...';
+    btnLoader.style.display = 'inline-block';
+    placeOrderBtn.disabled = true;
 
-function validateOrderData() {
-    if (orderData.items.length === 0) {
-        showToast('Your cart is empty');
-        return false;
+    // Calculate order totals (with PIN code based shipping)
+    updateCheckoutTotals(); // Update display first
+
+    // Get current totals for order
+    const subtotal = cart.reduce((sum, item) => {
+        const product = products.find(p => p.id === item.id);
+        return sum + (product ? product.price * item.quantity : 0);
+    }, 0);
+
+    const pincode = document.getElementById('pincode')?.value?.trim() || '';
+    let shipping = 0;
+
+    if (subtotal > 500) {
+        shipping = 0; // Free shipping over ₹500
+    } else if (pincode === '485001') {
+        shipping = 30; // Local delivery (Satna)
+    } else if (pincode && pincode.length === 6) {
+        shipping = 60; // Outside local area
+    } else {
+        shipping = 50; // Default shipping when no PIN entered
     }
-    
-    if (Object.keys(orderData.shipping).length === 0) {
-        showToast('Please complete shipping information');
-        return false;
-    }
-    
-    if (!orderData.payment.method) {
-        showToast('Please select a payment method');
-        return false;
-    }
-    
-    return true;
-}
 
-function processPayment() {
-    return new Promise((resolve, reject) => {
-        const paymentMethod = orderData.payment.method;
-        
-        if (paymentMethod === 'razorpay') {
-            processRazorpayPayment()
-                .then(resolve)
-                .catch(reject);
-        } else {
-            // For other payment methods, simulate success
-            setTimeout(() => {
-                resolve({
-                    success: true,
-                    paymentId: 'PAY_' + Date.now(),
-                    method: paymentMethod
-                });
-            }, 2000);
-        }
-    });
-}
+    const tax = subtotal * 0.18;
+    const discount = 0;
+    const total = subtotal + shipping + tax - discount;
 
-function processRazorpayPayment() {
-    return new Promise((resolve, reject) => {
-        // Razorpay configuration
-        const options = {
-            key: 'rzp_test_1DP5mmOlF5G5ag', // Replace with your Razorpay key
-            amount: orderData.total * 100, // Amount in paise
-            currency: 'INR',
-            name: 'Rasoiyaa Food',
-            description: 'Order for Rasoiyaa Food',
-            image: 'logo.png',
-            order_id: null, // This will be generated by your backend
-            handler: function(response) {
-                resolve({
-                    success: true,
-                    paymentId: response.razorpay_payment_id,
-                    method: 'razorpay'
-                });
-            },
-            prefill: {
-                name: `${orderData.shipping.firstName} ${orderData.shipping.lastName}`,
-                email: orderData.shipping.email,
-                contact: orderData.shipping.phone
-            },
-            notes: {
-                order_id: orderData.orderId
-            },
-            theme: {
-                color: '#e74c3c'
-            }
-        };
-        
-        const rzp = new Razorpay(options);
-        rzp.on('payment.failed', function(response) {
-            reject(new Error('Payment failed: ' + response.error.description));
-        });
-        
-        rzp.open();
-    });
-}
-
-function saveOrder() {
-    return fetch('http://localhost:8000/save-order', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('sessionToken')
+    // Create order data
+    const orderData = {
+        id: 'RAS' + Date.now().toString().slice(-6),
+        customer: checkoutData.customer,
+        shipping: checkoutData.shipping,
+        payment: { method: 'razorpay' },
+        items: cart,
+        totals: {
+            subtotal: subtotal,
+            shipping: shipping,
+            tax: tax,
+            discount: discount,
+            total: total
         },
-        body: JSON.stringify({
-            orderId: orderData.orderId,
-            items: orderData.items,
-            shipping: orderData.shipping,
-            payment: orderData.payment,
-            total: orderData.total,
-            subtotal: orderData.subtotal,
-            shippingCost: orderData.shippingCost,
-            tax: orderData.tax,
-            couponDiscount: orderData.couponDiscount,
-            timestamp: new Date().toISOString()
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            return { success: true, orderId: data.orderId };
-        } else {
-            throw new Error(data.message || 'Failed to save order');
+        status: 'pending',
+        orderDate: new Date().toISOString(),
+        estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()
+    };
+
+    // Razorpay options
+    const options = {
+        key: 'rzp_test_your_key_here', // Replace with your actual Razorpay test key
+        amount: total * 100, // Amount in paisa
+        currency: 'INR',
+        name: 'Rasoiyaa Food',
+        description: `Order #${orderData.id}`,
+        image: 'logo.png',
+        handler: function (response) {
+            // Payment successful
+            handlePaymentSuccess(response, orderData);
+        },
+        prefill: {
+            name: checkoutData.customer.firstName + ' ' + checkoutData.customer.lastName,
+            email: checkoutData.customer.email,
+            contact: checkoutData.customer.phone
+        },
+        notes: {
+            address: checkoutData.shipping.address + ', ' + checkoutData.shipping.city
+        },
+        theme: {
+            color: '#e74c3c'
+        },
+        modal: {
+            ondismiss: function() {
+                // Payment cancelled
+                handlePaymentFailure('Payment cancelled by user');
+            }
         }
-    });
+    };
+
+    // Initialize Razorpay
+    const rzp = new Razorpay(options);
+    rzp.open();
+
+    // Reset button state
+    btnText.textContent = 'Pay Now';
+    btnLoader.style.display = 'none';
+    placeOrderBtn.disabled = false;
 }
 
-function sendOrderConfirmation(orderData) {
-    fetch('http://localhost:8000/send-order-confirmation', {
+function handlePaymentSuccess(response, orderData) {
+    // Update order with payment details
+    orderData.payment = {
+        method: 'razorpay',
+        paymentId: response.razorpay_payment_id,
+        orderId: response.razorpay_order_id,
+        signature: response.razorpay_signature,
+        status: 'completed'
+    };
+    orderData.status = 'confirmed';
+
+    // Send order to server
+    fetch('http://localhost:8000/place-order', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            email: orderData.shipping.email,
-            orderId: orderData.orderId,
-            items: orderData.items,
-            total: orderData.total,
-            shipping: orderData.shipping
-        })
+        body: JSON.stringify(orderData)
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log('Order confirmation email sent');
-        }
-    })
-    .catch(error => {
-        console.error('Failed to send confirmation email:', error);
-    });
-}
+            // Clear cart
+            cart = [];
+            saveCart();
+            updateCartCount();
 
-function showOrderSuccess(orderId, total) {
-    document.getElementById('order-id').textContent = orderId;
-    document.getElementById('order-total').textContent = `₹${total}`;
-    document.getElementById('payment-status').textContent = 'Paid';
-    
-    document.getElementById('order-success-modal').style.display = 'block';
-}
-
-// OTP Functions (reused from main script)
-function sendOTP() {
-    const contact = document.getElementById('login-contact').value;
-    if (!contact) {
-        showToast('Please enter contact information');
-        return;
-    }
-    
-    fetch('http://localhost:8000/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contact })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('login-step-1').style.display = 'none';
-            document.getElementById('login-step-2').style.display = 'block';
-            document.getElementById('otp-email').textContent = contact;
-            showToast('OTP sent successfully');
+            // Show success modal with payment details
+            showOrderSuccess(orderData);
         } else {
-            showToast(data.message || 'Failed to send OTP');
+            showToast(data.message || 'Failed to process order');
         }
     })
     .catch(error => {
-        showToast('Network error. Please try again.');
+        console.error('Order processing error:', error);
+        showToast('Order placed but confirmation failed. Please contact support.');
+        // Still show success since payment was successful
+        showOrderSuccess(orderData);
     });
 }
 
-function verifyOTP() {
-    const contact = document.getElementById('login-contact').value;
-    const otp = document.getElementById('login-otp').value;
-    
-    if (!otp) {
-        showToast('Please enter OTP');
-        return;
-    }
-    
-    fetch('http://localhost:8000/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contact, otp })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('userContact', contact);
-            if (data.token) localStorage.setItem('sessionToken', data.token);
-            
-            document.getElementById('login-modal').style.display = 'none';
-            showUserInfo();
-            proceedToShipping();
-            showToast('Login successful!');
-        } else {
-            showToast('Invalid OTP. Please try again.');
-        }
-    })
-    .catch(error => {
-        showToast('Network error. Please try again.');
-    });
+function handlePaymentFailure(message) {
+    showToast(message || 'Payment failed. Please try again.');
 }
 
-function resendOTP() {
-    sendOTP();
+function showOrderSuccess(orderData) {
+    // Update success modal with order details
+    document.getElementById('success-order-id').textContent = orderData.id;
+    document.getElementById('success-payment-id').textContent = orderData.payment.paymentId || 'N/A';
+    document.getElementById('success-total').textContent = `₹${orderData.totals.total.toFixed(2)}`;
+    document.getElementById('success-delivery').textContent = orderData.estimatedDelivery;
+    document.getElementById('success-customer-name').textContent = `${orderData.customer.firstName} ${orderData.customer.lastName}`;
+    document.getElementById('success-customer-email').textContent = orderData.customer.email;
+
+    // Populate order items
+    const itemsContainer = document.getElementById('success-order-items');
+    itemsContainer.innerHTML = orderData.items.map(item => {
+        const product = products.find(p => p.id === item.id);
+        return `
+            <div class="success-item">
+                <span>${product ? product.name : item.name} × ${item.quantity}</span>
+                <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+        `;
+    }).join('');
+
+    // Update totals
+    document.getElementById('success-subtotal').textContent = `₹${orderData.totals.subtotal.toFixed(2)}`;
+    document.getElementById('success-shipping').textContent = orderData.totals.shipping === 0 ? 'FREE' : `₹${orderData.totals.shipping.toFixed(2)}`;
+    document.getElementById('success-tax').textContent = `₹${orderData.totals.tax.toFixed(2)}`;
+    document.getElementById('success-grand-total').textContent = `₹${orderData.totals.total.toFixed(2)}`;
+
+    // Show modal
+    const modal = document.getElementById('order-success-modal');
+    modal.style.display = 'block';
 }
 
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
+function downloadInvoice() {
+    // Generate and download PDF invoice
+    const orderId = document.getElementById('success-order-id').textContent;
+
+    // Create a simple HTML invoice for download
+    const invoiceHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Invoice - ${orderId}</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .header { text-align: center; border-bottom: 2px solid #e74c3c; padding-bottom: 20px; }
+                .invoice-details { margin: 20px 0; }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                .total { font-weight: bold; }
+                .footer { margin-top: 40px; text-align: center; color: #666; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>RASOIYAA FOOD</h1>
+                <p>Satna, Madhya Pradesh, India - 485001</p>
+                <h2>INVOICE</h2>
+                <p>Order ID: ${orderId}</p>
+                <p>Date: ${new Date().toLocaleDateString()}</p>
+            </div>
+
+            <div class="invoice-details">
+                <h3>Customer Details</h3>
+                <p>Name: ${document.getElementById('success-customer-name').textContent}</p>
+                <p>Email: ${document.getElementById('success-customer-email').textContent}</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${Array.from(document.querySelectorAll('.success-item')).map(item => {
+                        const spans = item.querySelectorAll('span');
+                        return `<tr><td>${spans[0].textContent}</td><td>1</td><td>${spans[1].textContent}</td><td>${spans[1].textContent}</td></tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+
+            <div class="totals">
+                <p>Subtotal: ${document.getElementById('success-subtotal').textContent}</p>
+                <p>Shipping: ${document.getElementById('success-shipping').textContent}</p>
+                <p>Tax: ${document.getElementById('success-tax').textContent}</p>
+                <p class="total">Total: ${document.getElementById('success-grand-total').textContent}</p>
+            </div>
+
+            <div class="footer">
+                <p>Thank you for shopping with Rasoiyaa Food!</p>
+                <p>Payment Method: Razorpay</p>
+            </div>
+        </body>
+        </html>
+    `;
+
+    // Create blob and download
+    const blob = new Blob([invoiceHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Invoice-${orderId}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('Invoice downloaded successfully!');
+}
+
+// Utility functions
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }

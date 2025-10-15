@@ -108,14 +108,13 @@ const itemsPerPage = 9;
 
 // Cart Management Functions
 function getCartKey() {
-    return currentUser ? `cart_${currentUser}` : 'cart_guest';
+    return currentUser ? `cart_${currentUser}` : 'cart';
 }
 
 function loadCart() {
     const cartKey = getCartKey();
     cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
     updateCartCount();
-    updateMiniCart();
 }
 
 function saveCart() {
@@ -131,6 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('products-grid') || document.getElementById('products-list')) {
         loadProducts();
     }
+    console.log('Script.js loaded - Current user:', currentUser);
+    console.log('Script.js loaded - Cart key:', getCartKey());
 });
 
 function initializeApp() {
@@ -139,6 +140,8 @@ function initializeApp() {
         currentUser = localStorage.getItem('userContact');
         showUserMenu();
     }
+
+    console.log('Script.js initialized - Current user:', currentUser);
 
     // Initialize URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -150,14 +153,10 @@ function initializeApp() {
 }
 
 function setupEventListeners() {
-    // Cart
-    const cartBtn = document.getElementById('cart-btn');
-    if (cartBtn) {
-        cartBtn.addEventListener('click', toggleMiniCart);
-    }
-    const closeMiniCart = document.querySelector('.close-mini-cart');
-    if (closeMiniCart) {
-        closeMiniCart.addEventListener('click', hideMiniCart);
+    // Proceed to checkout button
+    const proceedCheckoutBtn = document.getElementById('proceed-checkout');
+    if (proceedCheckoutBtn) {
+        proceedCheckoutBtn.addEventListener('click', proceedToCheckout);
     }
 
     // Search
@@ -234,6 +233,50 @@ function setupEventListeners() {
         newsletterForm.addEventListener('submit', handleNewsletter);
     }
 
+    // Login system
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    if (sendOtpBtn) {
+        sendOtpBtn.addEventListener('click', sendOTP);
+    }
+
+    const verifyOtpBtn = document.getElementById('verify-otp-btn');
+    if (verifyOtpBtn) {
+        verifyOtpBtn.addEventListener('click', verifyOTP);
+    }
+
+    const resendOtpBtn = document.getElementById('resend-otp-btn');
+    if (resendOtpBtn) {
+        resendOtpBtn.addEventListener('click', resendOTP);
+    }
+
+    const completeProfileBtn = document.getElementById('complete-profile-btn');
+    if (completeProfileBtn) {
+        completeProfileBtn.addEventListener('click', () => showLoginStep(4));
+    }
+
+    const skipProfileBtn = document.getElementById('skip-profile-btn');
+    if (skipProfileBtn) {
+        skipProfileBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    }
+
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', saveProfile);
+    }
+
+    const backToSuccessBtn = document.getElementById('back-to-success-btn');
+    if (backToSuccessBtn) {
+        backToSuccessBtn.addEventListener('click', () => showLoginStep(3));
+    }
+
+    const continueShoppingBtn = document.getElementById('continue-shopping-btn');
+    if (continueShoppingBtn) {
+        continueShoppingBtn.addEventListener('click', () => window.location.href = 'index.html');
+    }
+
+
     // User Menu
     const userMenuBtn = document.getElementById('user-menu-btn');
     if (userMenuBtn) {
@@ -273,8 +316,6 @@ function setupEventListeners() {
     if (addressForm) {
         addressForm.addEventListener('submit', saveAddress);
         console.log('Address form submit listener attached');
-    } else {
-        console.log('Address form not found');
     }
 
     // Order Tracking
@@ -295,19 +336,6 @@ function setupEventListeners() {
         btn.addEventListener('click', switchTab);
     });
 
-    // OTP Login
-    const sendOtpBtn = document.getElementById('send-otp-btn');
-    if (sendOtpBtn) {
-        sendOtpBtn.addEventListener('click', sendOTP);
-    }
-    const verifyOtpBtn = document.getElementById('verify-otp-btn');
-    if (verifyOtpBtn) {
-        verifyOtpBtn.addEventListener('click', verifyOTP);
-    }
-    const resendOtpBtn = document.getElementById('resend-otp-btn');
-    if (resendOtpBtn) {
-        resendOtpBtn.addEventListener('click', resendOTP);
-    }
 
     // User dropdown toggle
     function toggleUserDropdown() {
@@ -321,9 +349,6 @@ function setupEventListeners() {
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
-        }
-        if (!event.target.closest('.cart-container')) {
-            hideMiniCart();
         }
         if (!event.target.closest('.user-menu')) {
             const dropdown = document.getElementById('user-dropdown');
@@ -488,246 +513,7 @@ function renderProductsList(products) {
     `).join('');
 }
 
-// Cart Functions
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
 
-    const existingItem = cart.find(item => item.id === productId);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id: productId,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: 1
-        });
-    }
-
-    saveCart();
-    updateCartCount();
-    updateMiniCart();
-
-    // Check if popup is already visible
-    const existingPopup = document.getElementById('cart-popup');
-    if (existingPopup && existingPopup.classList.contains('show')) {
-        // Update existing popup
-        updateCartPopup();
-    } else {
-        // Show new popup
-        showCartPopup(product);
-    }
-}
-
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    saveCart();
-    updateCartCount();
-    updateMiniCart();
-}
-
-function updateCartQuantity(productId, quantity) {
-    const item = cart.find(item => item.id === productId);
-    if (item) {
-        if (quantity <= 0) {
-            removeFromCart(productId);
-        } else {
-            item.quantity = quantity;
-            saveCart();
-            updateCartCount();
-            updateMiniCart();
-        }
-    }
-}
-
-function updateCartCount() {
-    cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const cartCountEl = document.getElementById('cart-count');
-    if (cartCountEl) {
-        cartCountEl.textContent = cartCount;
-    }
-}
-
-function updateMiniCart() {
-    const container = document.getElementById('mini-cart-items');
-    const totalElement = document.getElementById('mini-cart-total');
-    
-    if (cart.length === 0) {
-        container.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-        totalElement.textContent = '0';
-        return;
-    }
-    
-    container.innerHTML = cart.map(item => `
-        <div class="mini-cart-item">
-            <img src="${item.image}" alt="${item.name}">
-            <div class="mini-cart-item-info">
-                <h4>${item.name}</h4>
-                <p>₹${item.price} x ${item.quantity}</p>
-                <div class="quantity-controls">
-                    <button onclick="updateCartQuantity('${item.id}', ${item.quantity - 1})">-</button>
-                    <span>${item.quantity}</span>
-                    <button onclick="updateCartQuantity('${item.id}', ${item.quantity + 1})">+</button>
-                </div>
-            </div>
-            <button class="remove-item" onclick="removeFromCart('${item.id}')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `).join('');
-    
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    totalElement.textContent = total;
-}
-
-function toggleMiniCart() {
-    const miniCart = document.getElementById('mini-cart');
-    if (miniCart) {
-        miniCart.classList.toggle('show');
-        if (miniCart.classList.contains('show')) {
-            updateMiniCart();
-        }
-    }
-}
-
-function hideMiniCart() {
-    const miniCart = document.getElementById('mini-cart');
-    if (miniCart) {
-        miniCart.classList.remove('show');
-    }
-}
-
-// Cart Popup Functions
-function showCartPopup(addedProduct) {
-    // Remove existing popup if any
-    const existingPopup = document.getElementById('cart-popup');
-    if (existingPopup) {
-        existingPopup.remove();
-    }
-
-    // Create popup element
-    const popup = document.createElement('div');
-    popup.id = 'cart-popup';
-    popup.className = 'cart-popup';
-
-    // Calculate total
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    // Create popup content
-    popup.innerHTML = `
-        <div class="cart-popup-content">
-            <div class="cart-popup-header">
-                <h3>🛒 Added to Cart</h3>
-                <button class="cart-popup-close">&times;</button>
-            </div>
-            <div class="cart-popup-items">
-                ${cart.slice(-3).map(item => `
-                    <div class="cart-popup-item">
-                        <img src="${item.image}" alt="${item.name}">
-                        <div class="cart-popup-item-info">
-                            <h4>${item.name}</h4>
-                            <p>₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}</p>
-                        </div>
-                        <button class="cart-popup-remove" onclick="removeFromCartPopup('${item.id}')">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `).join('')}
-                ${cart.length > 3 ? `<div class="cart-popup-more">+${cart.length - 3} more items</div>` : ''}
-            </div>
-            <div class="cart-popup-total">
-                <strong>Total: ₹${total}</strong>
-            </div>
-            <div class="cart-popup-actions">
-                <button class="btn btn-secondary" onclick="hideCartPopup()">Continue Shopping</button>
-                <a href="cart.html" class="btn btn-primary">View Cart</a>
-            </div>
-        </div>
-    `;
-
-    // Add to body
-    document.body.appendChild(popup);
-
-    // Show popup
-    setTimeout(() => {
-        popup.classList.add('show');
-    }, 100);
-
-    // Auto hide after 5 seconds
-    setTimeout(() => {
-        hideCartPopup();
-    }, 5000);
-
-    // Close button event
-    const closeBtn = popup.querySelector('.cart-popup-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', hideCartPopup);
-    }
-
-    // Click outside to close
-    popup.addEventListener('click', (e) => {
-        if (e.target === popup) {
-            hideCartPopup();
-        }
-    });
-}
-
-function hideCartPopup() {
-    const popup = document.getElementById('cart-popup');
-    if (popup) {
-        popup.classList.remove('show');
-        setTimeout(() => {
-            popup.remove();
-        }, 300);
-    }
-}
-
-function updateCartPopup() {
-    const popup = document.getElementById('cart-popup');
-    if (!popup) return;
-
-    if (cart.length > 0) {
-        // Recalculate total
-        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-        // Update items display
-        const itemsContainer = popup.querySelector('.cart-popup-items');
-        if (itemsContainer) {
-            itemsContainer.innerHTML = `
-                ${cart.slice(-3).map(item => `
-                    <div class="cart-popup-item">
-                        <img src="${item.image}" alt="${item.name}">
-                        <div class="cart-popup-item-info">
-                            <h4>${item.name}</h4>
-                            <p>₹${item.price} × ${item.quantity} = ₹${item.price * item.quantity}</p>
-                        </div>
-                        <button class="cart-popup-remove" onclick="removeFromCartPopup('${item.id}')">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `).join('')}
-                ${cart.length > 3 ? `<div class="cart-popup-more">+${cart.length - 3} more items</div>` : ''}
-            `;
-        }
-
-        // Update total
-        const totalElement = popup.querySelector('.cart-popup-total');
-        if (totalElement) {
-            totalElement.innerHTML = `<strong>Total: ₹${total}</strong>`;
-        }
-    } else {
-        // Hide popup if cart is empty
-        hideCartPopup();
-        showToast('Cart is empty');
-    }
-}
-
-function removeFromCartPopup(productId) {
-    removeFromCart(productId);
-    updateCartPopup();
-}
 
 // Filter Functions
 function toggleFilters() {
@@ -908,6 +694,83 @@ function toggleWishlist(productId) {
     showToast('Wishlist feature coming soon!');
 }
 
+// Cart Functions
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const existingItem = cart.find(item => item.id === productId);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        });
+    }
+
+    saveCart();
+    updateCartCount();
+
+    // Show simple toast notification
+    showToast(`${product.name} added to cart!`);
+}
+
+function removeFromCart(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    updateCartCount();
+}
+
+function updateCartQuantity(productId, quantity) {
+    const item = cart.find(item => item.id === productId);
+    if (item) {
+        if (quantity <= 0) {
+            removeFromCart(productId);
+        } else {
+            item.quantity = quantity;
+            saveCart();
+            updateCartCount();
+        }
+    }
+}
+
+function updateCartCount() {
+    cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+        cartCountEl.textContent = cartCount;
+    }
+    console.log('Cart count updated:', cartCount, 'for user:', currentUser);
+}
+
+function proceedToCheckout() {
+    if (cart.length === 0) {
+        showToast('Your cart is empty. Add some items before proceeding to checkout.');
+        return;
+    }
+
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
+    if (!isLoggedIn) {
+        showToast('Please login to proceed to checkout');
+        // Show login modal or redirect to login page
+        const loginBtn = document.getElementById('login-btn');
+        if (loginBtn) {
+            loginBtn.click();
+        } else {
+            window.location.href = 'login.html';
+        }
+        return;
+    }
+
+    // Redirect to checkout page
+    window.location.href = 'checkout.html';
+}
+
 function handleNewsletter(event) {
     event.preventDefault();
     const email = event.target.querySelector('input[type="email"]').value;
@@ -915,11 +778,258 @@ function handleNewsletter(event) {
     event.target.reset();
 }
 
+// Login System Functions
+async function sendOTP() {
+    const contactInput = document.getElementById('login-contact');
+    const email = contactInput.value.trim();
+
+    if (!email) {
+        showToast('Please enter your email address');
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showToast('Please enter a valid email address');
+        return;
+    }
+
+    // Show loading state
+    const sendBtn = document.getElementById('send-otp-btn');
+    const btnText = sendBtn.querySelector('.btn-text');
+    const btnLoader = sendBtn.querySelector('.btn-loader');
+    btnText.textContent = 'Sending...';
+    btnLoader.style.display = 'inline-block';
+    sendBtn.disabled = true;
+
+    try {
+        const response = await fetch('http://localhost:8000/send-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ contact: email })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Store email for verification
+            localStorage.setItem('pendingEmail', email);
+
+            // Update UI
+            document.getElementById('otp-email-display').textContent = email;
+            showLoginStep(2);
+            startOTPTimer();
+            showToast('OTP sent to your email!');
+        } else {
+            showToast(data.message || 'Failed to send OTP');
+        }
+    } catch (error) {
+        console.error('OTP send error:', error);
+        showToast('Failed to send OTP. Please try again.');
+    } finally {
+        // Reset button state
+        btnText.textContent = 'Send Login Code';
+        btnLoader.style.display = 'none';
+        sendBtn.disabled = false;
+    }
+}
+
+async function verifyOTP() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const otp = Array.from(otpInputs).map(input => input.value).join('');
+
+    if (otp.length !== 6) {
+        showToast('Please enter the complete 6-digit code');
+        return;
+    }
+
+    const email = localStorage.getItem('pendingEmail');
+    if (!email) {
+        showToast('Session expired. Please try again.');
+        showLoginStep(1);
+        return;
+    }
+
+    // Show loading state
+    const verifyBtn = document.getElementById('verify-otp-btn');
+    const btnText = verifyBtn.querySelector('.btn-text');
+    const btnLoader = verifyBtn.querySelector('.btn-loader');
+    btnText.textContent = 'Verifying...';
+    btnLoader.style.display = 'inline-block';
+    verifyBtn.disabled = true;
+
+    try {
+        const response = await fetch('http://localhost:8000/verify-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ contact: email, otp: otp })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Login successful
+            localStorage.setItem('loggedIn', 'true');
+            localStorage.setItem('userContact', email);
+            localStorage.setItem('sessionToken', Date.now().toString());
+            localStorage.removeItem('pendingEmail');
+
+            // Update user display
+            const userEmailDisplay = document.getElementById('user-email-display');
+            if (userEmailDisplay) {
+                userEmailDisplay.textContent = email;
+            }
+            currentUser = email;
+
+            // Track login time for admin panel
+            localStorage.setItem(`lastLogin_${email}`, new Date().toISOString());
+
+            showLoginStep(3);
+            showToast('Login successful!');
+
+
+            // Show profile completion step instead of auto redirect
+            showLoginStep(3);
+        } else {
+            showToast(data.message || 'Invalid OTP');
+        }
+    } catch (error) {
+        console.error('OTP verify error:', error);
+        showToast('Failed to verify OTP. Please try again.');
+    } finally {
+        // Reset button state
+        btnText.textContent = 'Verify Code';
+        btnLoader.style.display = 'none';
+        verifyBtn.disabled = false;
+    }
+}
+
+async function resendOTP() {
+    const email = localStorage.getItem('pendingEmail');
+    if (!email) {
+        showToast('Session expired. Please try again.');
+        showLoginStep(1);
+        return;
+    }
+
+    // Show loading state
+    const resendBtn = document.getElementById('resend-otp-btn');
+    const btnText = resendBtn.querySelector('.btn-text');
+    const btnLoader = resendBtn.querySelector('.btn-loader');
+    btnText.textContent = 'Sending...';
+    btnLoader.style.display = 'inline-block';
+    resendBtn.disabled = true;
+
+    try {
+        const response = await fetch('http://localhost:8000/send-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ contact: email })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            startOTPTimer();
+            showToast('OTP resent to your email!');
+        } else {
+            showToast(data.message || 'Failed to resend OTP');
+        }
+    } catch (error) {
+        console.error('OTP resend error:', error);
+        showToast('Failed to resend OTP. Please try again.');
+    } finally {
+        // Reset button state
+        btnText.textContent = 'Didn\'t receive code? Resend';
+        btnLoader.style.display = 'none';
+        resendBtn.disabled = false;
+    }
+}
+
+function startOTPTimer() {
+    let timeLeft = 300; // 5 minutes
+    const timerElement = document.getElementById('otp-timer');
+
+    const timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        timeLeft--;
+
+        if (timeLeft < 0) {
+            clearInterval(timer);
+            timerElement.textContent = '00:00';
+            showToast('OTP expired. Please request a new one.');
+        }
+    }, 1000);
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// OTP Input Handling
+document.addEventListener('DOMContentLoaded', function() {
+    // OTP input handling
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', function(e) {
+            // Allow only numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            // Auto focus next input
+            if (this.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+
+            // Auto submit when all digits entered
+            const allFilled = Array.from(otpInputs).every(inp => inp.value.length === 1);
+            if (allFilled) {
+                verifyOTP();
+            }
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text');
+            const digits = paste.replace(/[^0-9]/g, '').slice(0, 6);
+
+            digits.split('').forEach((digit, i) => {
+                if (otpInputs[i]) {
+                    otpInputs[i].value = digit;
+                }
+            });
+
+            // Focus last filled input or next empty one
+            const lastIndex = Math.min(digits.length - 1, otpInputs.length - 1);
+            otpInputs[lastIndex].focus();
+
+            // Auto submit if complete
+            if (digits.length === 6) {
+                setTimeout(verifyOTP, 100);
+            }
+        });
+    });
+});
+
 // Initialize featured products on homepage
 function loadFeaturedProducts() {
     const container = document.getElementById('featured-products');
     if (!container) return;
-    
+
     const featuredProducts = products.slice(0, 6);
     container.innerHTML = featuredProducts.map(product => `
         <div class="product-card" data-product-id="${product.id}">
@@ -938,6 +1048,9 @@ function loadFeaturedProducts() {
                     <button class="btn-add-cart" onclick="addToCart('${product.id}')">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
                     </button>
+                    <button class="btn-wishlist" onclick="toggleWishlist('${product.id}')">
+                        <i class="fas fa-heart"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -948,7 +1061,7 @@ function loadFeaturedProducts() {
 function loadBestSellers() {
     const container = document.getElementById('best-sellers-track');
     if (!container) return;
-    
+
     const bestSellers = products.filter(p => p.badge === 'Best Seller' || p.badge === 'Popular');
     container.innerHTML = bestSellers.map(product => `
         <div class="product-card" data-product-id="${product.id}">
@@ -967,313 +1080,15 @@ function loadBestSellers() {
                     <button class="btn-add-cart" onclick="addToCart('${product.id}')">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
                     </button>
+                    <button class="btn-wishlist" onclick="toggleWishlist('${product.id}')">
+                        <i class="fas fa-heart"></i>
+                    </button>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-// OTP Functions
-function sendOTP() {
-    const contact = document.getElementById('login-contact').value.trim();
-
-    if (!contact) {
-        showToast('Please enter your email address');
-        return;
-    }
-
-    // Validate email format
-    if (!/@/.test(contact)) {
-        showToast('Please enter a valid email address');
-        return;
-    }
-
-    // Show loading state
-    const sendBtn = document.getElementById('send-otp-btn');
-    if (sendBtn) {
-        sendBtn.disabled = true;
-        sendBtn.querySelector('.btn-text').textContent = 'Sending...';
-        sendBtn.querySelector('.btn-loader').style.display = 'flex';
-    }
-
-    console.log('Sending OTP to:', contact);
-    fetch('http://localhost:8000/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contact })
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-        console.log('Success:', data.success);
-        if (data.success) {
-            // Store email for display
-            const otpEmailDisplay = document.getElementById('otp-email-display');
-            if (otpEmailDisplay) {
-                otpEmailDisplay.textContent = contact;
-            }
-
-            // Move to step 2
-            showLoginStep(2);
-
-            // Start OTP timer
-            startOTPTimer();
-
-            // Setup OTP input handling
-            setupOTPInputs();
-
-            // Show success message
-            if (data.channel === 'email') {
-                showToast('OTP sent to your email! Check your inbox.');
-            } else if (data.channel === 'dev') {
-                showToast('OTP sent! Check console for the code (dev mode).');
-            } else {
-                showToast('OTP sent successfully!');
-            }
-        } else {
-            showToast(data.message || 'Failed to send OTP');
-        }
-    })
-    .catch(error => {
-        console.log('Fetch error:', error);
-        showToast('Network error. Please try again.');
-    })
-    .finally(() => {
-        // Reset button state
-        if (sendBtn) {
-            sendBtn.disabled = false;
-            sendBtn.querySelector('.btn-text').textContent = 'Send Login Code';
-            sendBtn.querySelector('.btn-loader').style.display = 'none';
-        }
-    });
-}
-
-function setupOTPInputs() {
-    const inputs = document.querySelectorAll('.otp-input');
-    const hiddenInput = document.getElementById('login-otp');
-
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', (e) => {
-            // Only allow numbers
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-
-            // Auto-focus next input
-            if (e.target.value && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-
-            // Update hidden input
-            updateHiddenOTP();
-        });
-
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                inputs[index - 1].focus();
-            }
-        });
-
-        input.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const paste = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-            const digits = paste.split('').slice(0, 6 - index);
-
-            digits.forEach((digit, i) => {
-                if (inputs[index + i]) {
-                    inputs[index + i].value = digit;
-                }
-            });
-
-            // Focus last filled input or next empty one
-            const nextIndex = Math.min(index + digits.length, inputs.length - 1);
-            inputs[nextIndex].focus();
-
-            updateHiddenOTP();
-        });
-    });
-}
-
-function updateHiddenOTP() {
-    const inputs = document.querySelectorAll('.otp-input');
-    const otp = Array.from(inputs).map(input => input.value).join('');
-    const hiddenInput = document.getElementById('login-otp');
-    if (hiddenInput) {
-        hiddenInput.value = otp;
-    }
-}
-
-function startOTPTimer() {
-    let timeLeft = 300; // 5 minutes
-    const timerElement = document.getElementById('otp-timer');
-
-    const timer = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        if (timerElement) {
-            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        timeLeft--;
-
-        if (timeLeft < 0) {
-            clearInterval(timer);
-            if (timerElement) {
-                timerElement.textContent = '00:00';
-            }
-            showToast('OTP expired. Please request a new one.');
-            // Could auto-redirect to step 1 here
-        }
-    }, 1000);
-}
-
-function verifyOTP() {
-    const contact = document.getElementById('login-contact').value.trim();
-    const otp = document.getElementById('login-otp').value.trim();
-
-    if (!otp || otp.length !== 6) {
-        showToast('Please enter the complete 6-digit OTP');
-        return;
-    }
-
-    // Show loading state
-    const verifyBtn = document.getElementById('verify-otp-btn');
-    if (verifyBtn) {
-        verifyBtn.disabled = true;
-        verifyBtn.querySelector('.btn-text').textContent = 'Verifying...';
-        verifyBtn.querySelector('.btn-loader').style.display = 'flex';
-    }
-
-    fetch('http://localhost:8000/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contact, otp })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('userContact', contact);
-            if (data.token) localStorage.setItem('sessionToken', data.token);
-
-            // Set current user and merge guest cart if exists
-            currentUser = contact;
-
-            // Check if there's a guest cart to merge
-            const guestCart = JSON.parse(localStorage.getItem('cart_guest') || '[]');
-            const userCart = JSON.parse(localStorage.getItem(`cart_${contact}`) || '[]');
-
-            if (guestCart.length > 0 && userCart.length === 0) {
-                // Merge guest cart to user cart
-                localStorage.setItem(`cart_${contact}`, JSON.stringify(guestCart));
-                localStorage.removeItem('cart_guest');
-                showToast('Your cart items have been saved to your account!');
-            } else if (guestCart.length > 0 && userCart.length > 0) {
-                // Merge guest cart with existing user cart
-                const mergedCart = [...userCart];
-                guestCart.forEach(guestItem => {
-                    const existingItem = mergedCart.find(item => item.id === guestItem.id);
-                    if (existingItem) {
-                        existingItem.quantity += guestItem.quantity;
-                    } else {
-                        mergedCart.push(guestItem);
-                    }
-                });
-                localStorage.setItem(`cart_${contact}`, JSON.stringify(mergedCart));
-                localStorage.removeItem('cart_guest');
-                showToast('Your cart items have been merged with your account!');
-            }
-
-            loadCart();
-
-            // Set user email display
-            const userEmailDisplay = document.getElementById('user-email-display');
-            if (userEmailDisplay) {
-                userEmailDisplay.textContent = contact;
-            }
-
-            // Move to success step
-            showLoginStep(3);
-
-            // Auto-close modal after 3 seconds
-            setTimeout(() => {
-                const loginModal = document.getElementById('login-modal');
-                if (loginModal) {
-                    loginModal.style.display = 'none';
-                }
-                const loginBtn = document.getElementById('login-btn');
-                if (loginBtn) {
-                    loginBtn.style.display = 'none';
-                }
-                const logoutBtn = document.getElementById('logout-btn');
-                if (logoutBtn) {
-                    logoutBtn.style.display = 'inline-flex';
-                }
-
-                // Reset login form for next time
-                resetLoginForm();
-
-                showToast('🎉 Login successful! Welcome to Rasoiyaa Food!');
-
-                // Cart is already loaded above
-                updateCartCount();
-                updateMiniCart();
-            }, 3000);
-
-        } else {
-            showToast(data.message || 'Invalid OTP. Please try again.');
-        }
-    })
-    .catch(error => {
-        showToast('Network error. Please try again.');
-    })
-    .finally(() => {
-        // Reset button state
-        if (verifyBtn) {
-            verifyBtn.disabled = false;
-            verifyBtn.querySelector('.btn-text').textContent = 'Verify Code';
-            verifyBtn.querySelector('.btn-loader').style.display = 'none';
-        }
-    });
-}
-
-function resendOTP() {
-    // Show loading state
-    const resendBtn = document.getElementById('resend-otp-btn');
-    if (resendBtn) {
-        resendBtn.disabled = true;
-        resendBtn.querySelector('.btn-text').textContent = 'Sending...';
-        resendBtn.querySelector('.btn-loader').style.display = 'flex';
-    }
-
-    sendOTP();
-
-    // Reset button after a delay (sendOTP will handle its own reset)
-    setTimeout(() => {
-        if (resendBtn) {
-            resendBtn.disabled = false;
-            resendBtn.querySelector('.btn-text').textContent = "Didn't receive code? Resend";
-            resendBtn.querySelector('.btn-loader').style.display = 'none';
-        }
-    }, 2000);
-}
-
-function resetLoginForm() {
-    // Clear all inputs
-    const contactInput = document.getElementById('login-contact');
-    if (contactInput) {
-        contactInput.value = '';
-    }
-    document.querySelectorAll('.otp-input').forEach(input => input.value = '');
-    const otpInput = document.getElementById('login-otp');
-    if (otpInput) {
-        otpInput.value = '';
-    }
-
-    // Reset to step 1
-    showLoginStep(1);
-}
 
 function showLoginStep(step) {
     // Hide all steps
@@ -1294,6 +1109,114 @@ function showLoginStep(step) {
     const currentStep = document.getElementById(`login-step-${step}`);
     if (currentStep) {
         currentStep.classList.add('active');
+    }
+}
+
+async function saveProfile() {
+    const firstName = document.getElementById('profile-first-name').value.trim();
+    const lastName = document.getElementById('profile-last-name').value.trim();
+    const phone = document.getElementById('profile-phone').value.trim();
+    const address = document.getElementById('profile-address').value.trim();
+    const city = document.getElementById('profile-city').value.trim();
+    const state = document.getElementById('profile-state').value.trim();
+    const pincode = document.getElementById('profile-pincode').value.trim();
+
+    // Validation
+    let isValid = true;
+    const errors = {
+        'first-name': 'First name is required',
+        'last-name': 'Last name is required',
+        'phone': 'Phone number is required',
+        'address': 'Address is required',
+        'city': 'City is required',
+        'state': 'State is required',
+        'pincode': 'Pincode is required'
+    };
+
+    // Clear previous errors
+    Object.keys(errors).forEach(key => {
+        const errorEl = document.getElementById(key + '-error');
+        if (errorEl) errorEl.style.display = 'none';
+    });
+
+    // Check required fields
+    if (!firstName) {
+        document.getElementById('first-name-error').textContent = errors['first-name'];
+        document.getElementById('first-name-error').style.display = 'block';
+        isValid = false;
+    }
+    if (!lastName) {
+        document.getElementById('last-name-error').textContent = errors['last-name'];
+        document.getElementById('last-name-error').style.display = 'block';
+        isValid = false;
+    }
+    if (!phone) {
+        document.getElementById('phone-error').textContent = errors['phone'];
+        document.getElementById('phone-error').style.display = 'block';
+        isValid = false;
+    }
+    if (!address) {
+        document.getElementById('address-error').textContent = errors['address'];
+        document.getElementById('address-error').style.display = 'block';
+        isValid = false;
+    }
+    if (!city) {
+        document.getElementById('city-error').textContent = errors['city'];
+        document.getElementById('city-error').style.display = 'block';
+        isValid = false;
+    }
+    if (!state) {
+        document.getElementById('state-error').textContent = errors['state'];
+        document.getElementById('state-error').style.display = 'block';
+        isValid = false;
+    }
+    if (!pincode) {
+        document.getElementById('pincode-error').textContent = errors['pincode'];
+        document.getElementById('pincode-error').style.display = 'block';
+        isValid = false;
+    }
+
+    if (!isValid) return;
+
+    // Show loading state
+    const saveBtn = document.getElementById('save-profile-btn');
+    const btnText = saveBtn.querySelector('.btn-text');
+    const btnLoader = saveBtn.querySelector('.btn-loader');
+    btnText.textContent = 'Saving...';
+    btnLoader.style.display = 'inline-block';
+    saveBtn.disabled = true;
+
+    try {
+        // Save profile data to localStorage
+        const profileData = {
+            firstName,
+            lastName,
+            phone,
+            address,
+            city,
+            state,
+            pincode,
+            email: currentUser,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem(`profile_${currentUser}`, JSON.stringify(profileData));
+
+        // Show success and redirect
+        showToast('Profile saved successfully!');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
+
+    } catch (error) {
+        console.error('Profile save error:', error);
+        showToast('Failed to save profile. Please try again.');
+    } finally {
+        // Reset button state
+        btnText.textContent = 'Save Profile & Continue';
+        btnLoader.style.display = 'none';
+        saveBtn.disabled = false;
     }
 }
 
