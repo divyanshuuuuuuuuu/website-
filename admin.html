@@ -309,9 +309,9 @@
                             <option value="90">Last 90 days</option>
                             <option value="365">Last year</option>
                         </select>
-                        <button id="export-report" class="btn btn-secondary">
+                        <button id="export-analytics" class="btn btn-secondary">
                             <i class="fas fa-download"></i>
-                            Export Report
+                            Export Analytics
                         </button>
                     </div>
                 </div>
@@ -362,6 +362,23 @@
 
                 <!-- Login Details Table -->
                 <div class="login-details-table-container">
+                    <div class="table-header">
+                        <h3>Customer Login Activity</h3>
+                        <div class="table-actions">
+                            <button id="export-login-details" class="btn btn-secondary">
+                                <i class="fas fa-file-csv"></i>
+                                Export to CSV
+                            </button>
+                            <button id="export-login-json" class="btn btn-secondary">
+                                <i class="fas fa-file-code"></i>
+                                Export JSON
+                            </button>
+                            <button id="refresh-login-details" class="btn btn-primary">
+                                <i class="fas fa-sync"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
                     <table class="login-details-table">
                         <thead>
                             <tr>

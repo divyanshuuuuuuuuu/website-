@@ -69,7 +69,12 @@ function setupEventListeners() {
 
     // Analytics
     document.getElementById('analytics-period').addEventListener('change', updateAnalytics);
-    document.getElementById('export-report').addEventListener('click', exportReport);
+    document.getElementById('export-analytics')?.addEventListener('click', exportAnalytics);
+
+    // Login Details
+    document.getElementById('export-login-details')?.addEventListener('click', exportLoginDetails);
+    document.getElementById('export-login-json')?.addEventListener('click', exportLoginDetailsJSON);
+    document.getElementById('refresh-login-details')?.addEventListener('click', refreshLoginDetails);
 
     // Settings
     document.querySelectorAll('.settings-form').forEach(form => {
@@ -1223,23 +1228,110 @@ function updateAnalytics() {
     createAnalyticsCharts();
 }
 
-function exportReport() {
+function exportAnalytics() {
+    const period = document.getElementById('analytics-period').value;
     const data = {
         orders: orders,
         products: products,
         customers: customers,
-        period: document.getElementById('analytics-period').value
+        analytics: {
+            period: period,
+            totalOrders: orders.length,
+            totalRevenue: orders.reduce((sum, order) => sum + order.total, 0),
+            totalCustomers: customers.length,
+            totalProducts: products.length
+        }
     };
-    
+
+    const csvHeaders = ['Metric', 'Value'];
+    const csvRows = [
+        ['Period', period],
+        ['Total Orders', orders.length],
+        ['Total Revenue', `₹${data.analytics.totalRevenue}`],
+        ['Total Customers', customers.length],
+        ['Total Products', products.length],
+        ['Average Order Value', `₹${orders.length > 0 ? Math.round(data.analytics.totalRevenue / orders.length) : 0}`]
+    ];
+
+    const csvContent = [csvHeaders, ...csvRows]
+        .map(row => row.join(','))
+        .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rasoiyaa-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast('Analytics exported successfully');
+}
+
+function exportLoginDetails() {
+    if (loginDetails.length === 0) {
+        showToast('No login details to export', 'error');
+        return;
+    }
+
+    // Convert login details to CSV format
+    const csvHeaders = ['Email', 'Login Time', 'Device Type', 'Browser', 'Login Method', 'IP Address', 'User Agent'];
+    const csvRows = loginDetails.map(login => [
+        login.email,
+        new Date(login.loginTime).toLocaleString(),
+        login.deviceType || 'Unknown',
+        login.browser || 'Unknown',
+        login.loginMethod || 'OTP',
+        login.ipAddress || 'N/A',
+        `"${login.userAgent || 'N/A'}"` // Wrap in quotes to handle commas
+    ]);
+
+    const csvContent = [csvHeaders, ...csvRows]
+        .map(row => row.join(','))
+        .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customer-login-details-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast('Login details exported to CSV successfully');
+}
+
+function exportLoginDetailsJSON() {
+    if (loginDetails.length === 0) {
+        showToast('No login details to export', 'error');
+        return;
+    }
+
+    const data = {
+        exportDate: new Date().toISOString(),
+        totalLogins: loginDetails.length,
+        loginDetails: loginDetails
+    };
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `rasoiyaa-report-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `customer-login-details-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    
-    showToast('Report exported successfully');
+
+    showToast('Login details exported to JSON successfully');
+}
+
+function refreshLoginDetails() {
+    loadLoginDetails();
+    setTimeout(() => {
+        if (currentSection === 'login-details') {
+            loadLoginDetailsTable();
+        }
+    }, 500);
+    showToast('Login details refreshed');
 }
 
 function handleSettingsSubmit(event) {
