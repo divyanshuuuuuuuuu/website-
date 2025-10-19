@@ -138,14 +138,34 @@ function loadProducts() {
     const maxPrice = parseInt(document.getElementById('price-max')?.value) || 500;
     const sortBy = document.getElementById('sort-select')?.value || 'default';
 
+    // First try to load from server (admin products), fallback to local products
+    fetch('http://localhost:8000/admin/products')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.products.length > 0) {
+                // Use server products
+                displayProducts(data.products, searchTerm, selectedCategories, selectedDietary, selectedAvailability, minPrice, maxPrice, sortBy);
+            } else {
+                // Fallback to local products
+                displayProducts(products, searchTerm, selectedCategories, selectedDietary, selectedAvailability, minPrice, maxPrice, sortBy);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading products from server:', error);
+            // Fallback to local products
+            displayProducts(products, searchTerm, selectedCategories, selectedDietary, selectedAvailability, minPrice, maxPrice, sortBy);
+        });
+}
+
+function displayProducts(productList, searchTerm, selectedCategories, selectedDietary, selectedAvailability, minPrice, maxPrice, sortBy) {
     // Filter products
-    let filteredProducts = products.filter(product => {
+    let filteredProducts = productList.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
                             product.description.toLowerCase().includes(searchTerm) ||
                             product.category.toLowerCase().includes(searchTerm);
 
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
-        const matchesDietary = selectedDietary.length === 0 || selectedDietary.some(d => product.dietary.includes(d));
+        const matchesDietary = selectedDietary.length === 0 || selectedDietary.some(d => product.dietary?.includes(d));
         const matchesAvailability = selectedAvailability.length === 0 ||
                                   (selectedAvailability.includes('in-stock') && product.inStock) ||
                                   (selectedAvailability.includes('pre-order') && product.preOrder);
@@ -164,7 +184,7 @@ function loadProducts() {
             case 'name':
                 return a.name.localeCompare(b.name);
             case 'newest':
-                return new Date(b.id) - new Date(a.id); // Assuming ID contains date info
+                return new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id);
             case 'popular':
                 return (b.badge === 'Best Seller' ? 1 : 0) - (a.badge === 'Best Seller' ? 1 : 0);
             default:
@@ -182,7 +202,7 @@ function loadProducts() {
 
         filteredProducts.forEach(product => {
             const productCard = createProductCard(product);
-            productsGrid.appendChild(productCard);
+            document.getElementById('products-grid').appendChild(productCard);
         });
     }
 }
@@ -240,8 +260,32 @@ function createProductCard(product) {
 
 // Quick View Function
 function quickView(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+    // First try to find in server products, then fallback to local
+    fetch('http://localhost:8000/admin/products')
+        .then(response => response.json())
+        .then(data => {
+            let product;
+            if (data.success && data.products.length > 0) {
+                product = data.products.find(p => p.id === productId);
+            }
+            if (!product) {
+                product = products.find(p => p.id === productId);
+            }
+
+            if (!product) return;
+
+            showQuickViewModal(product);
+        })
+        .catch(error => {
+            console.error('Error finding product for quick view:', error);
+            // Fallback to local products
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            showQuickViewModal(product);
+        });
+}
+
+function showQuickViewModal(product) {
 
     // Create modal for quick view
     const modal = document.createElement('div');
@@ -251,16 +295,16 @@ function quickView(productId) {
             <span class="close">&times;</span>
             <div class="quick-view-content">
                 <div class="quick-view-image">
-                    <img src="${product.image}" alt="${product.name}">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.src='placeholder.png'">
                 </div>
                 <div class="quick-view-details">
                     <h2>${product.name}</h2>
                     <p class="description">${product.description}</p>
                     <div class="ingredients">
-                        <strong>Ingredients:</strong> ${product.ingredients}
+                        <strong>Ingredients:</strong> ${product.ingredients || 'N/A'}
                     </div>
                     <div class="dietary-info">
-                        <strong>Dietary:</strong> ${product.dietary.join(', ')}
+                        <strong>Dietary:</strong> ${product.dietary ? product.dietary.join(', ') : 'N/A'}
                     </div>
                     <div class="price">₹${product.price}</div>
                     <button class="btn btn-primary" onclick="addToCart('${product.id}')">Add to Cart</button>
@@ -281,8 +325,32 @@ function quickView(productId) {
 
 // Add to Cart Function with Enhanced UI and Animations
 function addToCart(productId, quantity = 1) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+    // First try to find in server products, then fallback to local
+    fetch('http://localhost:8000/admin/products')
+        .then(response => response.json())
+        .then(data => {
+            let product;
+            if (data.success && data.products.length > 0) {
+                product = data.products.find(p => p.id === productId);
+            }
+            if (!product) {
+                product = products.find(p => p.id === productId);
+            }
+
+            if (!product) return;
+
+            addToCartProcess(product, quantity);
+        })
+        .catch(error => {
+            console.error('Error finding product:', error);
+            // Fallback to local products
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            addToCartProcess(product, quantity);
+        });
+}
+
+function addToCartProcess(product, quantity = 1) {
 
     // Show loading state on button
     const addBtn = document.querySelector(`[onclick="addToCart('${productId}')"]`);
@@ -603,11 +671,38 @@ function showToast(message, type = 'info') {
 
 // Load Product Details for individual product page
 function loadProductDetails(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) {
-        window.location.href = 'shop.html';
-        return;
-    }
+    // First try to find in server products, then fallback to local
+    fetch('http://localhost:8000/admin/products')
+        .then(response => response.json())
+        .then(data => {
+            let product;
+            if (data.success && data.products.length > 0) {
+                product = data.products.find(p => p.id === productId);
+            }
+            if (!product) {
+                product = products.find(p => p.id === productId);
+            }
+
+            if (!product) {
+                window.location.href = 'shop.html';
+                return;
+            }
+
+            displayProductDetails(product);
+        })
+        .catch(error => {
+            console.error('Error loading product details:', error);
+            // Fallback to local products
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                window.location.href = 'shop.html';
+                return;
+            }
+            displayProductDetails(product);
+        });
+}
+
+function displayProductDetails(product) {
 
     // Update page title and breadcrumb
     document.title = `${product.name} - Rasoiyaa Food`;
@@ -724,22 +819,52 @@ function loadProductDetails(productId) {
 
 // Load Related Products
 function loadRelatedProducts(category, excludeId) {
-    const relatedProducts = products.filter(p => p.category === category && p.id !== excludeId).slice(0, 4);
-    const relatedContainer = document.getElementById('related-products');
+    // Load from server first, then fallback to local
+    fetch('http://localhost:8000/admin/products')
+        .then(response => response.json())
+        .then(data => {
+            let allProducts = products; // fallback
+            if (data.success && data.products.length > 0) {
+                allProducts = data.products;
+            }
 
-    if (!relatedContainer) return;
+            const relatedProducts = allProducts.filter(p => p.category === category && p.id !== excludeId).slice(0, 4);
+            const relatedContainer = document.getElementById('related-products');
 
-    relatedContainer.innerHTML = '';
+            if (!relatedContainer) return;
 
-    if (relatedProducts.length === 0) {
-        relatedContainer.innerHTML = '<p>No related products found.</p>';
-        return;
-    }
+            relatedContainer.innerHTML = '';
 
-    relatedProducts.forEach(product => {
-        const productCard = createRelatedProductCard(product);
-        relatedContainer.appendChild(productCard);
-    });
+            if (relatedProducts.length === 0) {
+                relatedContainer.innerHTML = '<p>No related products found.</p>';
+                return;
+            }
+
+            relatedProducts.forEach(product => {
+                const productCard = createRelatedProductCard(product);
+                relatedContainer.appendChild(productCard);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading related products:', error);
+            // Fallback to local products
+            const relatedProducts = products.filter(p => p.category === category && p.id !== excludeId).slice(0, 4);
+            const relatedContainer = document.getElementById('related-products');
+
+            if (!relatedContainer) return;
+
+            relatedContainer.innerHTML = '';
+
+            if (relatedProducts.length === 0) {
+                relatedContainer.innerHTML = '<p>No related products found.</p>';
+                return;
+            }
+
+            relatedProducts.forEach(product => {
+                const productCard = createRelatedProductCard(product);
+                relatedContainer.appendChild(productCard);
+            });
+        });
 }
 
 // Create Related Product Card
