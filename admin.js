@@ -433,6 +433,10 @@ function loadLoginDetails() {
         .then(data => {
             if (data.success) {
                 loginDetails = data.loginDetails;
+                console.log('Loaded login details:', loginDetails.length, 'entries');
+            } else {
+                console.log('No login details found');
+                loginDetails = [];
             }
         })
         .catch(error => {
@@ -590,6 +594,21 @@ Member Since: ${new Date(customer.createdAt).toLocaleDateString()}`);
 
 function loadLoginDetailsTable() {
     const container = document.getElementById('login-details-tbody');
+
+    console.log('Rendering login details table with:', loginDetails.length, 'entries');
+
+    if (loginDetails.length === 0) {
+        container.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-user-clock" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                    <strong>No login activity yet</strong><br>
+                    <small>Login details will appear here when users log into the website</small>
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
     container.innerHTML = loginDetails.map(login => `
         <tr>

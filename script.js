@@ -1056,8 +1056,8 @@ function verifyOTP() {
                     browser: getBrowserInfo(),
                     loginMethod: 'OTP'
                 })
-            }).then(() => {
-                console.log('Login details saved to admin panel');
+            }).then(response => response.json()).then(result => {
+                console.log('Login details saved to admin panel:', result);
             }).catch(error => {
                 console.error('Error saving login details:', error);
             });
