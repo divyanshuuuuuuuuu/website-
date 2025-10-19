@@ -3,23 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - Rasoiyaa Food</title>
-    <meta name="description" content="View and manage your shopping cart at Rasoiyaa Food. Review items, apply coupons, and proceed to checkout.">
-    <meta name="keywords" content="shopping cart, cart, checkout, Rasoiyaa Food, snacks, online shopping">
-    <meta name="author" content="Rasoiyaa Food">
-
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Shopping Cart - Rasoiyaa Food">
-    <meta property="og:description" content="View and manage your shopping cart at Rasoiyaa Food">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rasoiyaafood.com/cart.html">
-    <meta property="og:image" content="https://rasoiyaafood.com/logo.png">
-    <meta property="og:site_name" content="Rasoiyaa Food">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-
+    <title>Shopping Cart - Rasoiyaa Food | Review Your Order</title>
+    <meta name="description" content="Review your cart items before checkout. Manage quantities, apply coupons, and proceed to secure checkout with Rasoiyaa Food.">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -28,21 +13,16 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <!-- Logo -->
                 <div class="logo">
                     <a href="index.html">
                         <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
                         <span class="logo-text">RASOIYAA</span>
                     </a>
                 </div>
-
-                <!-- Search Bar -->
                 <div class="search-bar">
                     <input type="text" id="search-input" placeholder="Search for snacks, categories...">
                     <button class="search-btn"><i class="fas fa-search"></i></button>
                 </div>
-
-                <!-- Navigation -->
                 <nav class="nav">
                     <ul class="nav-menu">
                         <li><a href="index.html">Home</a></li>
@@ -51,49 +31,9 @@
                         <li><a href="contact.html">Contact</a></li>
                         <li><a href="blog.html">Blog</a></li>
                         <li><a href="faq.html">FAQ</a></li>
-                        <li><a href="login.html" id="login-btn" class="nav-login-btn">Login</a></li>
-                        <li id="user-menu" class="user-menu" style="display: none;">
-                            <button id="user-menu-btn" class="user-menu-btn">
-                                <i class="fas fa-user-circle"></i>
-                                <span id="user-email-nav">User</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div id="user-dropdown" class="user-dropdown">
-                                <div class="user-info">
-                                    <p><strong id="user-name-nav">Welcome!</strong></p>
-                                    <p id="user-contact-nav"></p>
-                                </div>
-                                <hr>
-                                <a href="#" id="my-orders-link">
-                                    <i class="fas fa-shopping-bag"></i>
-                                    My Orders
-                                </a>
-                                <a href="#" id="account-settings-link">
-                                    <i class="fas fa-cog"></i>
-                                    Account Settings
-                                </a>
-                                <hr>
-                                <button id="logout-btn" class="logout-btn">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    Logout
-                                </button>
-                            </div>
-                        </li>
-                        <li id="logout-menu-item" style="display: none;">
-                            <button id="logout-btn-nav" class="nav-logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Logout
-                            </button>
-                        </li>
                     </ul>
                 </nav>
-
-                <!-- User Actions -->
                 <div class="user-actions">
-                    <a href="cart.html" class="btn-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count">0</span>
-                    </a>
                     <a href="login.html" id="login-btn" class="btn-login">
                         <i class="fas fa-user"></i>
                         <span>Login</span>
@@ -102,9 +42,29 @@
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Mobile Menu Toggle -->
                 <button class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -114,147 +74,169 @@
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <div class="cart-page">
-                <div class="cart-header">
-                    <h1><i class="fas fa-shopping-cart"></i> Your Shopping Cart</h1>
-                    <p class="cart-subtitle">Review your items and proceed to checkout</p>
-                </div>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <a href="shop.html">Shop</a>
+                    <span>/</span>
+                    <span>Shopping Cart</span>
+                </nav>
+            </div>
+        </section>
 
-                <!-- Empty Cart State -->
-                <div id="empty-cart" class="empty-cart">
-                    <div class="empty-cart-content">
-                        <div class="empty-cart-icon">
-                            <i class="fas fa-shopping-cart"></i>
+        <!-- Cart Header -->
+        <section class="cart-header">
+            <div class="container">
+                <div class="cart-header-content">
+                    <h1>Shopping Cart</h1>
+                    <p>Review your items before checkout</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cart Content -->
+        <section class="cart-content">
+            <div class="container">
+                <div class="cart-container">
+                    <!-- Cart Items -->
+                    <div class="cart-items-section">
+                        <div class="cart-items-header">
+                            <h2>Your Items</h2>
+                            <span id="item-count">0 items</span>
                         </div>
-                        <h2>Your cart is empty</h2>
-                        <p>Looks like you haven't added any delicious snacks yet!</p>
-                        <p>Explore our wide range of authentic Indian snacks and start shopping.</p>
-                        <div class="empty-cart-actions">
-                            <a href="shop.html" class="btn btn-primary btn-large">
-                                <i class="fas fa-store"></i> Start Shopping
-                            </a>
-                            <a href="index.html" class="btn btn-outline">
-                                <i class="fas fa-home"></i> Go to Home
-                            </a>
+                        <div id="cart-items-container" class="cart-items-container">
+                            <!-- Cart items will be loaded here -->
+                        </div>
+                        <div id="empty-cart" class="empty-cart-message" style="display: none;">
+                            <div class="empty-cart-content">
+                                <i class="fas fa-shopping-cart"></i>
+                                <h3>Your cart is empty</h3>
+                                <p>Add some delicious snacks to get started!</p>
+                                <a href="shop.html" class="btn btn-primary">Start Shopping</a>
+                            </div>
+                        </div>
+
+                        <!-- Cart Actions -->
+                        <div class="cart-actions" id="cart-actions" style="display: none;">
+                            <button id="clear-cart-btn" class="btn btn-danger" onclick="clearCart()">
+                                <i class="fas fa-trash"></i> Clear Cart
+                            </button>
+                            <button id="update-cart-btn" class="btn btn-secondary" onclick="updateCart()">
+                                <i class="fas fa-sync"></i> Update Cart
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Cart Content -->
-                <div id="cart-content" class="cart-content" style="display: none;">
-                    <div class="cart-layout">
-                        <!-- Cart Items -->
-                        <div class="cart-items-section">
-                            <div class="cart-items-header">
-                                <h2>Cart Items (<span id="item-count">0</span> items)</h2>
-                                <div class="cart-info">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Items in your cart are reserved for 30 minutes</span>
+                    <!-- Cart Summary -->
+                    <div class="cart-summary-section">
+                        <div class="cart-summary">
+                            <h3>Order Summary</h3>
+                            
+                            <!-- Coupon Section -->
+                            <div class="coupon-section">
+                                <h4>Have a coupon?</h4>
+                                <div class="coupon-input">
+                                    <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                                    <button id="apply-coupon" class="btn btn-outline">Apply</button>
+                                </div>
+                                <div id="coupon-message" class="coupon-message"></div>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="order-summary">
+                                <div class="summary-row">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">₹0</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Shipping:</span>
+                                    <span id="shipping">₹50</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Tax (GST):</span>
+                                    <span id="tax">₹0</span>
+                                </div>
+                                <div class="summary-row" id="coupon-row" style="display: none;">
+                                    <span>Discount:</span>
+                                    <span id="discount">-₹0</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Total:</span>
+                                    <span id="total">₹0</span>
                                 </div>
                             </div>
 
-                            <div class="cart-items-list">
-                                <div id="cart-items-container" class="cart-items">
-                                    <!-- Cart items will be loaded here -->
-                                </div>
-                            </div>
-
-                            <!-- Continue Shopping -->
-                            <div class="continue-shopping-section">
-                                <a href="shop.html" class="continue-shopping-link">
-                                    <i class="fas fa-arrow-left"></i>
-                                    <span>Continue Shopping</span>
+                            <!-- Checkout Actions -->
+                            <div class="checkout-actions">
+                                <a href="checkout.html" class="btn btn-primary btn-large" id="proceed-checkout">
+                                    <i class="fas fa-lock"></i>
+                                    Proceed to Checkout
                                 </a>
+                                <div class="checkout-options">
+                                    <a href="shop.html" class="btn btn-secondary">Continue Shopping</a>
+                                    <button id="save-cart-btn" class="btn btn-outline" onclick="saveCart()">
+                                        <i class="fas fa-bookmark"></i> Save Cart
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Cart Tips -->
+                            <div class="cart-tips">
+                                <h4><i class="fas fa-lightbulb"></i> Shopping Tips</h4>
+                                <ul>
+                                    <li>Free shipping on orders above ₹500</li>
+                                    <li>Use coupon codes for extra savings</li>
+                                    <li>Add multiple items for better deals</li>
+                                    <li>Items are fresh and delivered quickly</li>
+                                </ul>
+                            </div>
+
+                            <!-- Security Notice -->
+                            <div class="security-notice">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure checkout with SSL encryption</span>
                             </div>
                         </div>
 
-                        <!-- Order Summary Sidebar -->
-                        <div class="cart-summary-section">
-                            <div class="summary-card">
-                                <div class="summary-header">
-                                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                        <!-- Trust Badges -->
+                        <div class="trust-badges">
+                            <h4>Why Choose Us?</h4>
+                            <div class="trust-items">
+                                <div class="trust-item">
+                                    <i class="fas fa-truck"></i>
+                                    <span>Free Shipping</span>
                                 </div>
-
-                                <div class="summary-breakdown">
-                                    <div class="summary-row">
-                                        <span class="summary-label">Subtotal</span>
-                                        <span class="summary-value" id="subtotal">₹0</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span class="summary-label">Shipping</span>
-                                        <span class="summary-value" id="shipping">₹0</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span class="summary-label">Tax (GST 18%)</span>
-                                        <span class="summary-value" id="tax">₹0</span>
-                                    </div>
-                                    <div id="coupon-row" class="summary-row discount" style="display: none;">
-                                        <span class="summary-label">Discount</span>
-                                        <span class="summary-value discount-amount" id="discount">-₹0</span>
-                                    </div>
+                                <div class="trust-item">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Easy Returns</span>
                                 </div>
-
-                                <hr class="summary-divider">
-
-                                <div class="summary-total">
-                                    <div class="summary-row total-row">
-                                        <span class="summary-label total-label">Total Amount</span>
-                                        <span class="summary-value total-value" id="total">₹0</span>
-                                    </div>
+                                <div class="trust-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Secure Payment</span>
                                 </div>
-
-                                <!-- Coupon Section -->
-                                <div class="coupon-section">
-                                    <div class="coupon-input-group">
-                                        <input type="text" id="coupon-code" placeholder="Enter coupon code (optional)" class="coupon-input">
-                                        <button id="apply-coupon" class="btn btn-outline btn-sm">Apply</button>
-                                    </div>
-                                    <div id="coupon-message" class="coupon-message"></div>
-                                </div>
-
-                                <!-- Checkout Button -->
-                                <div class="checkout-section">
-                                    <a href="checkout.html" class="btn btn-primary btn-large btn-full checkout-btn">
-                                        <i class="fas fa-lock"></i>
-                                        <span>Proceed to Secure Checkout</span>
-                                    </a>
-                                    <div class="checkout-security">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <span>Secure SSL Encrypted Checkout</span>
-                                    </div>
-                                </div>
-
-                                <!-- Cart Help -->
-                                <div class="cart-help">
-                                    <div class="help-item">
-                                        <i class="fas fa-truck"></i>
-                                        <div class="help-text">
-                                            <strong>Free Shipping</strong>
-                                            <small>On orders over ₹500</small>
-                                        </div>
-                                    </div>
-                                    <div class="help-item">
-                                        <i class="fas fa-undo"></i>
-                                        <div class="help-text">
-                                            <strong>Easy Returns</strong>
-                                            <small>30-day return policy</small>
-                                        </div>
-                                    </div>
-                                    <div class="help-item">
-                                        <i class="fas fa-headset"></i>
-                                        <div class="help-text">
-                                            <strong>24/7 Support</strong>
-                                            <small>Call us anytime</small>
-                                        </div>
-                                    </div>
+                                <div class="trust-item">
+                                    <i class="fas fa-heart"></i>
+                                    <span>Fresh Products</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Recently Viewed -->
+        <section class="recently-viewed">
+            <div class="container">
+                <h2 class="section-title">You Might Also Like</h2>
+                <div class="products-grid" id="recommended-products">
+                    <!-- Recommended products will be loaded here -->
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -305,10 +287,38 @@
         </div>
     </footer>
 
-    <!-- Toast Notification -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <div id="login-step-1">
+                <div class="form-group">
+                    <label for="login-contact">Email Address:</label>
+                    <input type="email" id="login-contact" placeholder="Enter your email address" required>
+                </div>
+                <button id="send-otp-btn" class="btn btn-primary btn-full">Send OTP</button>
+            </div>
+            <div id="login-step-2" style="display: none;">
+                <p>OTP sent to <span id="otp-email"></span></p>
+                <div class="form-group">
+                    <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button id="verify-otp-btn" class="btn btn-primary btn-full">Verify OTP</button>
+                <button id="resend-otp-btn" class="btn btn-secondary btn-full">Resend OTP</button>
+            </div>
+            <div id="login-success" style="display: none;">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Login successful!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
     <div id="toast" class="toast"></div>
 
-    <!-- Scripts -->
     <script src="script.js"></script>
     <script src="cart.js"></script>
 </body>

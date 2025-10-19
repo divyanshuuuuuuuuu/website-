@@ -5,6 +5,7 @@ let currentSection = 'dashboard';
 let products = [];
 let orders = [];
 let customers = [];
+let loginDetails = [];
 let charts = {};
 
 // Initialize admin panel
@@ -15,17 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeAdmin() {
-    // Check admin authentication
-    const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
-    if (!isAdmin) {
-        showLoginPrompt();
-        return;
-    }
-    
-    // Load initial data
+    // Load initial data (authentication check is now in admin.html)
     loadProducts();
     loadOrders();
     loadCustomers();
+    loadLoginDetails();
     updateStats();
 }
 
@@ -49,11 +44,6 @@ function setupEventListeners() {
     
     // Customer management
     document.getElementById('customer-search').addEventListener('input', searchCustomers);
-
-    // User data management
-    document.getElementById('user-search').addEventListener('input', searchUsers);
-    document.getElementById('user-status-filter').addEventListener('change', filterUsers);
-    document.getElementById('export-users').addEventListener('click', exportUsers);
     
     // Analytics
     document.getElementById('analytics-period').addEventListener('change', updateAnalytics);
@@ -114,11 +104,8 @@ function showSection(sectionName) {
         case 'analytics':
             loadAnalytics();
             break;
-        case 'user-data':
-            loadUserData();
-            break;
-        case 'notifications':
-            loadNotifications();
+        case 'login-details':
+            loadLoginDetailsTable();
             break;
     }
 }
@@ -340,7 +327,7 @@ function loadOrders() {
 function loadCustomers() {
     // Extract customers from orders
     const customerMap = new Map();
-    
+
     orders.forEach(order => {
         const contact = order.shipping?.email || order.shipping?.phone;
         if (contact) {
@@ -353,7 +340,7 @@ function loadCustomers() {
                     status: 'active'
                 });
             }
-            
+
             const customer = customerMap.get(contact);
             customer.orders++;
             customer.totalSpent += order.total;
@@ -362,8 +349,23 @@ function loadCustomers() {
             }
         }
     });
-    
+
     customers = Array.from(customerMap.values());
+}
+
+function loadLoginDetails() {
+    // Load login details from server
+    fetch('http://localhost:8000/login-details')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loginDetails = data.loginDetails;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading login details:', error);
+            loginDetails = [];
+        });
 }
 
 function loadProductsTable() {
@@ -416,7 +418,7 @@ function loadOrdersTable() {
 
 function loadCustomersTable() {
     const container = document.getElementById('customers-tbody');
-    
+
     container.innerHTML = customers.map(customer => `
         <tr>
             <td>${customer.contact}</td>
@@ -431,6 +433,69 @@ function loadCustomersTable() {
             </td>
         </tr>
     `).join('');
+}
+
+function loadLoginDetailsTable() {
+    const container = document.getElementById('login-details-tbody');
+
+    container.innerHTML = loginDetails.map(login => `
+        <tr>
+            <td>${login.email}</td>
+            <td>${login.firstName && login.lastName ? `${login.firstName} ${login.lastName}` : 'N/A'}</td>
+            <td>${login.phone || 'N/A'}</td>
+            <td>${formatAddress(login)}</td>
+            <td>${new Date(login.loginTime).toLocaleString()}</td>
+            <td>${getDeviceInfo(login.userAgent)}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="viewLoginDetail('${login.id}')">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function formatAddress(login) {
+    if (!login.address) return 'N/A';
+
+    const parts = [];
+    if (login.address) parts.push(login.address);
+    if (login.city) parts.push(login.city);
+    if (login.state && login.pincode) parts.push(`${login.state} - ${login.pincode}`);
+
+    return parts.join(', ') || 'N/A';
+}
+
+function getDeviceInfo(userAgent) {
+    if (!userAgent) return 'Unknown';
+
+    const ua = userAgent.toLowerCase();
+    if (ua.includes('mobile')) return 'Mobile';
+    if (ua.includes('tablet')) return 'Tablet';
+    if (ua.includes('windows')) return 'Windows PC';
+    if (ua.includes('mac')) return 'Mac';
+    if (ua.includes('linux')) return 'Linux';
+    return 'Desktop';
+}
+
+function viewLoginDetail(loginId) {
+    const login = loginDetails.find(l => l.id === loginId);
+    if (!login) return;
+
+    const fullAddress = formatAddress(login);
+
+    alert(`Complete Login Details:
+
+Email: ${login.email}
+Name: ${login.firstName && login.lastName ? `${login.firstName} ${login.lastName}` : 'N/A'}
+Phone: ${login.phone || 'N/A'}
+Address: ${fullAddress}
+Delivery Instructions: ${login.deliveryInstructions || 'N/A'}
+
+Login Time: ${new Date(login.loginTime).toLocaleString()}
+IP Address: ${login.ipAddress || 'N/A'}
+Device/Browser: ${getDeviceInfo(login.userAgent)}
+User Agent: ${login.userAgent || 'N/A'}`);
 }
 
 function loadAnalytics() {
@@ -893,19 +958,7 @@ function handleSettingsSubmit(event) {
     showToast('Settings saved successfully');
 }
 
-function showLoginPrompt() {
-    const username = prompt('Enter admin username:');
-    const password = prompt('Enter admin password:');
-    
-    // Simple authentication (in production, use proper authentication)
-    if (username === 'admin' && password === 'rasoiyaa123') {
-        localStorage.setItem('adminLoggedIn', 'true');
-        initializeAdmin();
-    } else {
-        alert('Invalid credentials');
-        window.location.href = 'index.html';
-    }
-}
+// Removed showLoginPrompt function - now handled by admin-login.html
 
 function logout() {
     localStorage.removeItem('adminLoggedIn');
@@ -919,480 +972,4 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
-}
-
-// User Data Management Functions
-let allUsers = [];
-
-function loadUserData() {
-    // Collect all user data from localStorage
-    allUsers = [];
-    const userEmails = new Set();
-
-    // Get all users who have logged in (from orders and profiles)
-    orders.forEach(order => {
-        if (order.shipping?.email) {
-            userEmails.add(order.shipping.email);
-        }
-    });
-
-    // Get all users with profiles
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('profile_')) {
-            const email = key.replace('profile_', '');
-            userEmails.add(email);
-        }
-    }
-
-    // Build user data
-    userEmails.forEach(email => {
-        const profile = JSON.parse(localStorage.getItem(`profile_${email}`) || 'null');
-        const userOrders = orders.filter(order =>
-            order.shipping?.email === email
-        );
-
-        const lastLogin = localStorage.getItem(`lastLogin_${email}`);
-        const createdAt = profile?.createdAt || userOrders[0]?.createdAt || new Date().toISOString();
-
-        allUsers.push({
-            email: email,
-            name: profile ? `${profile.firstName} ${profile.lastName}` : 'N/A',
-            phone: profile?.phone || 'N/A',
-            address: profile ? `${profile.address}, ${profile.city}, ${profile.state} - ${profile.pincode}` : 'N/A',
-            profileStatus: profile ? 'Complete' : 'Incomplete',
-            lastLogin: lastLogin || 'Never',
-            createdAt: createdAt,
-            ordersCount: userOrders.length,
-            totalSpent: userOrders.reduce((sum, order) => sum + order.total, 0)
-        });
-    });
-
-    updateUserStats();
-    loadUserDataTable();
-}
-
-function updateUserStats() {
-    const totalRegistered = allUsers.length;
-    const totalActive = allUsers.filter(user => user.lastLogin !== 'Never').length;
-    const totalProfiles = allUsers.filter(user => user.profileStatus === 'Complete').length;
-    const recentLogins = allUsers.filter(user => {
-        if (user.lastLogin === 'Never') return false;
-        const loginDate = new Date(user.lastLogin);
-        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        return loginDate > oneDayAgo;
-    }).length;
-
-    document.getElementById('total-registered-users').textContent = totalRegistered;
-    document.getElementById('total-active-users').textContent = totalActive;
-    document.getElementById('total-profiles').textContent = totalProfiles;
-    document.getElementById('recent-logins').textContent = recentLogins;
-}
-
-function loadUserDataTable(filteredUsers = null) {
-    const users = filteredUsers || allUsers;
-    const container = document.getElementById('user-data-tbody');
-
-    container.innerHTML = users.map(user => `
-        <tr>
-            <td>${user.email}</td>
-            <td>${user.name}</td>
-            <td>${user.phone}</td>
-            <td>${user.address.length > 50 ? user.address.substring(0, 50) + '...' : user.address}</td>
-            <td><span class="status-badge status-${user.profileStatus.toLowerCase()}">${user.profileStatus}</span></td>
-            <td>${user.lastLogin === 'Never' ? 'Never' : new Date(user.lastLogin).toLocaleDateString()}</td>
-            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
-            <td>
-                <button class="btn btn-sm btn-primary" onclick="viewUserDetails('${user.email}')">
-                    <i class="fas fa-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-info" onclick="viewUserOrders('${user.email}')">
-                    <i class="fas fa-shopping-cart"></i>
-                </button>
-                <button class="btn btn-sm btn-warning" onclick="sendUserEmail('${user.email}')">
-                    <i class="fas fa-envelope"></i>
-                </button>
-            </td>
-        </tr>
-    `).join('');
-}
-
-function searchUsers() {
-    const searchTerm = document.getElementById('user-search').value.toLowerCase();
-    const filteredUsers = allUsers.filter(user =>
-        user.email.toLowerCase().includes(searchTerm) ||
-        user.name.toLowerCase().includes(searchTerm) ||
-        user.phone.includes(searchTerm)
-    );
-    loadUserDataTable(filteredUsers);
-}
-
-function filterUsers() {
-    const statusFilter = document.getElementById('user-status-filter').value;
-    let filteredUsers = allUsers;
-
-    switch (statusFilter) {
-        case 'active':
-            filteredUsers = allUsers.filter(user => user.lastLogin !== 'Never');
-            break;
-        case 'inactive':
-            filteredUsers = allUsers.filter(user => user.lastLogin === 'Never');
-            break;
-        case 'has-profile':
-            filteredUsers = allUsers.filter(user => user.profileStatus === 'Complete');
-            break;
-        case 'no-profile':
-            filteredUsers = allUsers.filter(user => user.profileStatus === 'Incomplete');
-            break;
-    }
-
-    loadUserDataTable(filteredUsers);
-}
-
-function viewUserDetails(email) {
-    const user = allUsers.find(u => u.email === email);
-    if (!user) return;
-
-    const profile = JSON.parse(localStorage.getItem(`profile_${email}`) || 'null');
-
-    let detailsHTML = `
-        <div class="user-details-modal">
-            <h3>User Details: ${user.email}</h3>
-            <div class="user-info-grid">
-                <div class="info-section">
-                    <h4>Basic Information</h4>
-                    <p><strong>Name:</strong> ${user.name}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Phone:</strong> ${user.phone}</p>
-                    <p><strong>Profile Status:</strong> <span class="status-badge status-${user.profileStatus.toLowerCase()}">${user.profileStatus}</span></p>
-                </div>
-
-                <div class="info-section">
-                    <h4>Address Information</h4>
-                    <p><strong>Address:</strong> ${user.address}</p>
-                </div>
-
-                <div class="info-section">
-                    <h4>Account Statistics</h4>
-                    <p><strong>Total Orders:</strong> ${user.ordersCount}</p>
-                    <p><strong>Total Spent:</strong> ₹${user.totalSpent}</p>
-                    <p><strong>Last Login:</strong> ${user.lastLogin === 'Never' ? 'Never' : new Date(user.lastLogin).toLocaleString()}</p>
-                    <p><strong>Account Created:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
-                </div>
-            </div>
-    `;
-
-    if (profile) {
-        detailsHTML += `
-            <div class="info-section">
-                <h4>Profile Details</h4>
-                <p><strong>Updated:</strong> ${new Date(profile.updatedAt).toLocaleString()}</p>
-            </div>
-        `;
-    }
-
-    detailsHTML += `</div>`;
-
-    // Create and show modal
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content large">
-            <span class="close">&times;</span>
-            ${detailsHTML}
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'block';
-
-    // Close modal functionality
-    modal.querySelector('.close').addEventListener('click', () => {
-        modal.remove();
-    });
-}
-
-function viewUserOrders(email) {
-    const userOrders = orders.filter(order => order.shipping?.email === email);
-
-    if (userOrders.length === 0) {
-        showToast('No orders found for this user');
-        return;
-    }
-
-    let ordersHTML = `
-        <div class="user-orders-modal">
-            <h3>Orders for ${email}</h3>
-            <div class="orders-list">
-    `;
-
-    userOrders.forEach(order => {
-        ordersHTML += `
-            <div class="order-card">
-                <div class="order-header">
-                    <h4>Order #${order.id}</h4>
-                    <span class="status-badge status-${order.status}">${order.status}</span>
-                </div>
-                <div class="order-details">
-                    <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-                    <p><strong>Items:</strong> ${order.items.length}</p>
-                    <p><strong>Total:</strong> ₹${order.total}</p>
-                </div>
-                <div class="order-actions">
-                    <button class="btn btn-sm btn-primary" onclick="viewOrder('${order.id}')">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-
-    ordersHTML += `
-            </div>
-        </div>
-    `;
-
-    // Create and show modal
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-        <div class="modal-content large">
-            <span class="close">&times;</span>
-            ${ordersHTML}
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.style.display = 'block';
-
-    // Close modal functionality
-    modal.querySelector('.close').addEventListener('click', () => {
-        modal.remove();
-    });
-}
-
-function sendUserEmail(email) {
-    const subject = prompt('Enter email subject:');
-    if (!subject) return;
-
-    const message = prompt('Enter email message:');
-    if (!message) return;
-
-    // Send email using the API
-    fetch('http://localhost:8000/send-email', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            to: email,
-            subject: subject,
-            text: message,
-            html: `<p>${message.replace(/\n/g, '<br>')}</p>`,
-            fromName: 'Rasoiyaa Food Admin'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('Email sent successfully to ' + email);
-        } else {
-            showToast('Failed to send email: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Email send error:', error);
-        showToast('Failed to send email');
-    });
-}
-
-function exportUsers() {
-    const data = {
-        users: allUsers,
-        exportDate: new Date().toISOString(),
-        totalUsers: allUsers.length,
-        summary: {
-            totalRegistered: allUsers.length,
-            totalActive: allUsers.filter(user => user.lastLogin !== 'Never').length,
-            totalProfiles: allUsers.filter(user => user.profileStatus === 'Complete').length,
-            totalRevenue: allUsers.reduce((sum, user) => sum + user.totalSpent, 0)
-        }
-    };
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `rasoiyaa-users-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-
-    showToast('User data exported successfully');
-}
-
-// Notification Management Functions
-let notifications = [];
-
-function loadNotifications() {
-    // Load notifications from localStorage or initialize empty
-    notifications = JSON.parse(localStorage.getItem('admin_notifications') || '[]');
-
-    // Filter to show only recent notifications (last 30 days)
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const recentNotifications = notifications.filter(n => new Date(n.timestamp) > thirtyDaysAgo);
-
-    updateNotificationStats();
-    loadNotificationsList(recentNotifications);
-}
-
-function updateNotificationStats() {
-    const pendingOrders = orders.filter(order => order.status === 'confirmed').length;
-    const whatsappSent = notifications.filter(n => n.type === 'whatsapp').length;
-    const emailsSent = notifications.filter(n => n.type === 'email').length;
-    const lastNotification = notifications.length > 0 ?
-        new Date(notifications[notifications.length - 1].timestamp).toLocaleString() : '-';
-
-    document.getElementById('pending-notifications').textContent = pendingOrders;
-    document.getElementById('whatsapp-sent').textContent = whatsappSent;
-    document.getElementById('emails-sent').textContent = emailsSent;
-    document.getElementById('last-notification').textContent = lastNotification;
-}
-
-function loadNotificationsList(notificationList) {
-    const container = document.getElementById('notifications-container');
-
-    if (notificationList.length === 0) {
-        container.innerHTML = `
-            <div class="no-notifications">
-                <i class="fas fa-bell-slash"></i>
-                <p>No recent notifications</p>
-                <small>Order notifications will appear here</small>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = notificationList.reverse().map(notification => `
-        <div class="notification-card ${notification.type}">
-            <div class="notification-header">
-                <div class="notification-icon">
-                    <i class="fas fa-${getNotificationIcon(notification.type)}"></i>
-                </div>
-                <div class="notification-info">
-                    <h4>${notification.title}</h4>
-                    <span class="notification-time">${new Date(notification.timestamp).toLocaleString()}</span>
-                </div>
-                <span class="notification-type ${notification.type}">${notification.type}</span>
-            </div>
-            <div class="notification-content">
-                <p>${notification.message}</p>
-                ${notification.orderId ? `<p><strong>Order ID:</strong> ${notification.orderId}</p>` : ''}
-                ${notification.customer ? `<p><strong>Customer:</strong> ${notification.customer}</p>` : ''}
-                ${notification.amount ? `<p><strong>Amount:</strong> ₹${notification.amount}</p>` : ''}
-            </div>
-            <div class="notification-actions">
-                ${notification.orderId ? `<button class="btn btn-sm btn-primary" onclick="viewOrder('${notification.orderId}')">View Order</button>` : ''}
-                <button class="btn btn-sm btn-danger" onclick="deleteNotification('${notification.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function getNotificationIcon(type) {
-    switch (type) {
-        case 'whatsapp': return 'comment';
-        case 'email': return 'envelope';
-        case 'order': return 'shopping-cart';
-        default: return 'bell';
-    }
-}
-
-function addNotification(type, title, message, data = {}) {
-    const notification = {
-        id: Date.now().toString(),
-        type: type,
-        title: title,
-        message: message,
-        timestamp: new Date().toISOString(),
-        ...data
-    };
-
-    notifications.push(notification);
-
-    // Keep only last 1000 notifications
-    if (notifications.length > 1000) {
-        notifications = notifications.slice(-1000);
-    }
-
-    // Save to localStorage
-    localStorage.setItem('admin_notifications', JSON.stringify(notifications));
-
-    // Update UI if notifications section is active
-    if (currentSection === 'notifications') {
-        loadNotifications();
-    }
-
-    return notification;
-}
-
-// Function to be called when order is placed (from server.js)
-function notifyNewOrder(order) {
-    const customerName = `${order.shipping.firstName} ${order.shipping.lastName}`;
-
-    // Add order notification
-    addNotification('order', 'New Order Received', `Order ${order.id} placed by ${customerName}`, {
-        orderId: order.id,
-        customer: customerName,
-        amount: order.total
-    });
-
-    // Add WhatsApp notification
-    addNotification('whatsapp', 'WhatsApp Notification Sent', `Order details sent to admin WhatsApp`, {
-        orderId: order.id,
-        customer: customerName,
-        amount: order.total
-    });
-
-    // Add email notification
-    addNotification('email', 'Order Confirmation Email Sent', `Confirmation email sent to ${order.shipping.email}`, {
-        orderId: order.id,
-        customer: customerName,
-        amount: order.total
-    });
-}
-
-function deleteNotification(notificationId) {
-    notifications = notifications.filter(n => n.id !== notificationId);
-    localStorage.setItem('admin_notifications', JSON.stringify(notifications));
-    loadNotifications();
-    showToast('Notification deleted');
-}
-
-function testNotification() {
-    const testOrder = {
-        id: 'TEST' + Date.now(),
-        shipping: {
-            firstName: 'Test',
-            lastName: 'Customer',
-            email: 'test@example.com',
-            phone: '+91 9876543210',
-            address: 'Test Address',
-            city: 'Test City',
-            state: 'Test State',
-            pincode: '485001'
-        },
-        total: 299
-    };
-
-    notifyNewOrder(testOrder);
-    showToast('Test notification added');
-}
-
-function clearNotifications() {
-    if (confirm('Are you sure you want to clear all notifications?')) {
-        notifications = [];
-        localStorage.removeItem('admin_notifications');
-        loadNotifications();
-        showToast('All notifications cleared');
-    }
 }

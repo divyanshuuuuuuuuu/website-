@@ -3,452 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Rasoiyaa Food</title>
-    <meta name="description" content="Complete your order at Rasoiyaa Food. Secure checkout with multiple payment options.">
-    <meta name="keywords" content="checkout, payment, order, Rasoiyaa Food, secure checkout">
-    <meta name="author" content="Rasoiyaa Food">
-
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Checkout - Rasoiyaa Food">
-    <meta property="og:description" content="Complete your order securely at Rasoiyaa Food">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rasoiyaafood.com/checkout.html">
-    <meta property="og:image" content="https://rasoiyaafood.com/logo.png">
-    <meta property="og:site_name" content="Rasoiyaa Food">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-
+    <title>Checkout - Rasoiyaa Food | Complete Your Order</title>
+    <meta name="description" content="Complete your order securely with Rasoiyaa Food. Multiple payment options available. Fast and secure checkout process.">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Modern Checkout Theme */
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
-            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.2);
-            --border-radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        /* Animated Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.3) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            z-index: -1;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(120deg); }
-            66% { transform: translateY(10px) rotate(240deg); }
-        }
-
-        /* Glassmorphism Cards */
-        .checkout-step, .summary-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-light);
-            transition: var(--transition);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .checkout-step:hover, .summary-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        /* Step Indicators */
-        .checkout-steps {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            padding: 0 1rem;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            min-width: 120px;
-            text-align: center;
-        }
-
-        .step-number {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            transition: var(--transition);
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .step.active .step-number {
-            background: var(--primary-gradient);
-            border-color: transparent;
-            animation: pulse 2s infinite;
-        }
-
-        .step.completed .step-number {
-            background: var(--success-gradient);
-            border-color: transparent;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Form Styling */
-        .form-field input, .form-field select {
-            width: 100%;
-            padding: 1rem 1.2rem;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            transition: var(--transition);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-field input:focus, .form-field select:focus {
-            border-color: #4facfe;
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.3);
-            outline: none;
-        }
-
-        .form-field label {
-            color: white;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: block;
-            font-size: 0.95rem;
-        }
-
-        /* Button Animations */
-        .btn {
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            padding: 1rem 2rem;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            font-size: 1rem;
-            min-height: 48px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary {
-            background: var(--primary-gradient);
-        }
-
-        .btn-secondary {
-            background: var(--secondary-gradient);
-        }
-
-        /* Progress Lines */
-        .step-line {
-            width: 80px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            transition: var(--transition);
-        }
-
-        .step-line.active {
-            background: var(--success-gradient);
-        }
-
-        /* Payment Methods */
-        .payment-method {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            transition: var(--transition);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        .payment-method:hover {
-            border-color: #4facfe;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .payment-method.selected {
-            border-color: #4facfe;
-            background: rgba(79, 172, 254, 0.1);
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.2);
-        }
-
-        .payment-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--primary-gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .payment-details {
-            flex: 1;
-        }
-
-        .payment-name {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .payment-badge {
-            background: var(--success-gradient);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .payment-description {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .payment-features {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .feature-tag {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .payment-check {
-            color: #4facfe;
-            font-size: 1.5rem;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .payment-method.selected .payment-check {
-            opacity: 1;
-        }
-
-        /* Security Features */
-        .security-features {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 1.5rem 0;
-        }
-
-        .security-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .security-item i {
-            color: #4facfe;
-            font-size: 1rem;
-        }
-
-        /* Loading Animation */
-        .btn-loader {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Success Animation */
-        @keyframes successBounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .success-icon {
-            animation: successBounce 2s;
-        }
-
-        /* Floating Elements */
-        .checkout-step, .summary-card {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Step Actions */
-        .step-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: space-between;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .checkout-layout {
-                flex-direction: column;
-            }
-
-            .checkout-steps {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .step-line {
-                width: 3px;
-                height: 40px;
-            }
-
-            .step-actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .checkout-step, .summary-card {
-                padding: 1.5rem;
-            }
-
-            .security-features {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
+    <!-- Razorpay Integration -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <!-- Logo -->
                 <div class="logo">
                     <a href="index.html">
                         <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
                         <span class="logo-text">RASOIYAA</span>
                     </a>
                 </div>
-
-                <!-- Navigation -->
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
                 <nav class="nav">
                     <ul class="nav-menu">
                         <li><a href="index.html">Home</a></li>
@@ -457,49 +33,9 @@
                         <li><a href="contact.html">Contact</a></li>
                         <li><a href="blog.html">Blog</a></li>
                         <li><a href="faq.html">FAQ</a></li>
-                        <li><a href="login.html" id="login-btn" class="nav-login-btn">Login</a></li>
-                        <li id="user-menu" class="user-menu" style="display: none;">
-                            <button id="user-menu-btn" class="user-menu-btn">
-                                <i class="fas fa-user-circle"></i>
-                                <span id="user-email-nav">User</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div id="user-dropdown" class="user-dropdown">
-                                <div class="user-info">
-                                    <p><strong id="user-name-nav">Welcome!</strong></p>
-                                    <p id="user-contact-nav"></p>
-                                </div>
-                                <hr>
-                                <a href="#" id="my-orders-link">
-                                    <i class="fas fa-shopping-bag"></i>
-                                    My Orders
-                                </a>
-                                <a href="#" id="account-settings-link">
-                                    <i class="fas fa-cog"></i>
-                                    Account Settings
-                                </a>
-                                <hr>
-                                <button id="logout-btn" class="logout-btn">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    Logout
-                                </button>
-                            </div>
-                        </li>
-                        <li id="logout-menu-item" style="display: none;">
-                            <button id="logout-btn-nav" class="nav-logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Logout
-                            </button>
-                        </li>
                     </ul>
                 </nav>
-
-                <!-- User Actions -->
                 <div class="user-actions">
-                    <a href="cart.html" class="btn-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span id="cart-count">0</span>
-                    </a>
                     <a href="login.html" id="login-btn" class="btn-login">
                         <i class="fas fa-user"></i>
                         <span>Login</span>
@@ -508,9 +44,29 @@
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Mobile Menu Toggle -->
                 <button class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -520,270 +76,242 @@
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <div class="checkout-page">
-                <div class="checkout-header">
-                    <h1><i class="fas fa-credit-card"></i> Secure Checkout</h1>
-                    <p class="checkout-subtitle">Complete your order with confidence</p>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <a href="shop.html">Shop</a>
+                    <span>/</span>
+                    <span>Checkout</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Checkout Header -->
+        <section class="checkout-header">
+            <div class="container">
+                <div class="checkout-header-content">
+                    <h1>Checkout</h1>
+                    <p>Complete your order securely</p>
                 </div>
+            </div>
+        </section>
 
-                <div class="checkout-layout">
-                    <!-- Checkout Form -->
-                    <div class="checkout-form-section">
-                        <!-- Progress Steps -->
-                        <div class="checkout-steps">
-                            <div class="step active" data-step="1">
-                                <div class="step-number">1</div>
-                                <span>Customer</span>
-                            </div>
-                            <div class="step-line"></div>
-                            <div class="step" data-step="2">
-                                <div class="step-number">2</div>
-                                <span>Shipping</span>
-                            </div>
-                            <div class="step-line"></div>
-                            <div class="step" data-step="3">
-                                <div class="step-number">3</div>
-                                <span>Payment</span>
-                            </div>
-                            <div class="step-line"></div>
-                            <div class="step" data-step="4">
-                                <div class="step-number">4</div>
-                                <span>Confirm</span>
-                            </div>
+        <!-- Checkout Content -->
+        <section class="checkout-content">
+            <div class="container">
+                <div class="checkout-container">
+                    <!-- Login/Account Section -->
+                    <div class="checkout-section" id="account-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-user"></i> Account Information</h2>
                         </div>
-
-                        <!-- Step 1: Customer Information -->
-                        <div id="checkout-step-1" class="checkout-step active">
-                            <div class="step-header">
-                                <h2><i class="fas fa-user"></i> Customer Information</h2>
-                                <p>Tell us about yourself</p>
-                            </div>
-
-                            <div class="form-grid">
-                                <div class="form-field">
-                                    <label for="first-name">First Name *</label>
-                                    <input type="text" id="first-name" name="firstName" required>
-                                    <div class="error-message" id="first-name-error"></div>
+                        <div class="section-content">
+                            <div id="login-prompt" class="login-prompt">
+                                <div class="login-prompt-content">
+                                    <h3>Already have an account?</h3>
+                                    <p>Login to speed up your checkout process</p>
+                                    <button id="checkout-login-btn" class="btn btn-primary">Login</button>
                                 </div>
-                                <div class="form-field">
-                                    <label for="last-name">Last Name *</label>
-                                    <input type="text" id="last-name" name="lastName" required>
-                                    <div class="error-message" id="last-name-error"></div>
+                                <div class="divider">
+                                    <span>OR</span>
                                 </div>
-                                <div class="form-field">
-                                    <label for="email">Email Address *</label>
-                                    <input type="email" id="email" name="email" required>
-                                    <div class="error-message" id="email-error"></div>
-                                </div>
-                                <div class="form-field">
-                                    <label for="phone">Mobile Number *</label>
-                                    <input type="tel" id="phone" name="phone" required>
-                                    <div class="error-message" id="phone-error"></div>
+                                <div class="guest-checkout">
+                                    <h3>Continue as Guest</h3>
+                                    <p>You can create an account after checkout</p>
+                                    <button id="guest-checkout-btn" class="btn btn-secondary">Continue as Guest</button>
                                 </div>
                             </div>
-
-                            <div class="step-actions">
-                                <button class="btn btn-secondary" onclick="window.location.href='cart.html'">
-                                    <i class="fas fa-arrow-left"></i> Back to Cart
-                                </button>
-                                <button class="btn btn-primary" onclick="nextStep(2)">
-                                    Continue <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Shipping Address -->
-                        <div id="checkout-step-2" class="checkout-step">
-                            <div class="step-header">
-                                <h2><i class="fas fa-map-marker-alt"></i> Shipping Address</h2>
-                                <p>Where should we deliver your order?</p>
-                            </div>
-
-                            <div class="form-grid">
-                                <div class="form-field full-width">
-                                    <label for="address">Street Address *</label>
-                                    <input type="text" id="address" name="address" required>
-                                    <div class="error-message" id="address-error"></div>
+                            <div id="user-info" class="user-info" style="display: none;">
+                                <div class="user-details">
+                                    <h3>Welcome back!</h3>
+                                    <p id="user-contact"></p>
+                                    <button id="change-user-btn" class="btn btn-outline">Change Account</button>
                                 </div>
-                                <div class="form-field">
-                                    <label for="city">City *</label>
-                                    <input type="text" id="city" name="city" required>
-                                    <div class="error-message" id="city-error"></div>
-                                </div>
-                                <div class="form-field">
-                                    <label for="state">State *</label>
-                                    <input type="text" id="state" name="state" required>
-                                    <div class="error-message" id="state-error"></div>
-                                </div>
-                                <div class="form-field">
-                                    <label for="pincode">PIN Code *</label>
-                                    <input type="text" id="pincode" name="pincode" required maxlength="6" pattern="[0-9]{6}">
-                                    <div class="error-message" id="pincode-error"></div>
-                                    <div class="shipping-info" id="shipping-info">Enter PIN code to see shipping charges</div>
-                                </div>
-                            </div>
-
-                            <div class="form-field checkbox-field">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="billing-same" checked>
-                                    <span class="checkmark"></span>
-                                    Billing address is the same as shipping
-                                </label>
-                            </div>
-
-                            <div class="step-actions">
-                                <button class="btn btn-secondary" onclick="prevStep(1)">
-                                    <i class="fas fa-arrow-left"></i> Back
-                                </button>
-                                <button class="btn btn-primary" onclick="nextStep(3)">
-                                    Continue <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 3: Payment Method -->
-                        <div id="checkout-step-3" class="checkout-step">
-                            <div class="step-header">
-                                <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
-                                <p>Secure online payment</p>
-                            </div>
-
-                            <div class="payment-methods">
-                                <div class="payment-method selected" data-method="razorpay">
-                                    <div class="payment-icon">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <div class="payment-details">
-                                        <div class="payment-name">
-                                            <strong>Razorpay Secure Payment</strong>
-                                            <span class="payment-badge">Recommended</span>
-                                        </div>
-                                        <div class="payment-description">
-                                            <small>Fast, secure online payment with all major cards and UPI</small>
-                                        </div>
-                                        <div class="payment-features">
-                                            <span class="feature-tag"><i class="fas fa-lock"></i> SSL Encrypted</span>
-                                            <span class="feature-tag"><i class="fas fa-mobile-alt"></i> Mobile Friendly</span>
-                                            <span class="feature-tag"><i class="fas fa-clock"></i> Instant Processing</span>
-                                        </div>
-                                    </div>
-                                    <div class="payment-check">
-                                        <i class="fas fa-check-circle"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="payment-note">
-                                <div class="security-features">
-                                    <div class="security-item">
-                                        <i class="fas fa-lock"></i>
-                                        <span>256-bit SSL Encryption</span>
-                                    </div>
-                                    <div class="security-item">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <span>PCI DSS Compliant</span>
-                                    </div>
-                                    <div class="security-item">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Secure Payment Gateway</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="step-actions">
-                                <button class="btn btn-secondary" onclick="prevStep(2)">
-                                    <i class="fas fa-arrow-left"></i> Back
-                                </button>
-                                <button class="btn btn-primary" onclick="nextStep(4)">
-                                    Review Order <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 4: Order Review -->
-                        <div id="checkout-step-4" class="checkout-step">
-                            <div class="step-header">
-                                <h2><i class="fas fa-check"></i> Review & Pay</h2>
-                                <p>Please review your order and complete payment</p>
-                            </div>
-
-                            <div class="order-review">
-                                <div class="review-card">
-                                    <h3>Customer Details</h3>
-                                    <div id="review-customer-info" class="review-content"></div>
-                                </div>
-                                <div class="review-card">
-                                    <h3>Shipping Address</h3>
-                                    <div id="review-shipping-info" class="review-content"></div>
-                                </div>
-                                <div class="review-card">
-                                    <h3>Payment Method</h3>
-                                    <div id="review-payment-info" class="review-content"></div>
-                                </div>
-                            </div>
-
-                            <div class="terms-section">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="terms-agree" required>
-                                    <span class="checkmark"></span>
-                                    I agree to the <a href="terms-conditions.html" target="_blank">Terms & Conditions</a>
-                                </label>
-                                <div class="error-message" id="terms-error"></div>
-                            </div>
-
-                            <div class="step-actions">
-                                <button class="btn btn-secondary" onclick="prevStep(3)">
-                                    <i class="fas fa-arrow-left"></i> Back
-                                </button>
-                                <button class="btn btn-primary btn-large" id="place-order-btn" onclick="initiateRazorpayPayment()">
-                                    <i class="fas fa-credit-card"></i>
-                                    <span class="btn-text">Pay Now</span>
-                                    <div class="btn-loader" style="display: none;">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                    </div>
-                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Order Summary Sidebar -->
-                    <div class="checkout-sidebar">
-                        <div class="summary-card">
-                            <h3>Order Summary</h3>
+                    <!-- Shipping Information -->
+                    <div class="checkout-section" id="shipping-section" style="display: none;">
+                        <div class="section-header">
+                            <h2><i class="fas fa-shipping-fast"></i> Shipping Information</h2>
+                        </div>
+                        <div class="section-content">
+                            <form class="shipping-form" id="shipping-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="first-name">First Name *</label>
+                                        <input type="text" id="first-name" name="firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="last-name">Last Name *</label>
+                                        <input type="text" id="last-name" name="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Street Address *</label>
+                                    <input type="text" id="address" name="address" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="city">City *</label>
+                                        <input type="text" id="city" name="city" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="state">State *</label>
+                                        <input type="text" id="state" name="state" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pincode">PIN Code *</label>
+                                        <input type="text" id="pincode" name="pincode" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="delivery-instructions">Delivery Instructions (Optional)</label>
+                                    <textarea id="delivery-instructions" name="deliveryInstructions" rows="3" placeholder="Any special delivery instructions..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="save-address" name="saveAddress">
+                                        <span class="checkmark"></span>
+                                        Save this address for future orders
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
-                            <div id="checkout-items" class="checkout-items">
+                    <!-- Payment Method -->
+                    <div class="checkout-section" id="payment-section" style="display: none;">
+                        <div class="section-header">
+                            <h2><i class="fas fa-credit-card"></i> Payment Method</h2>
+                        </div>
+                        <div class="section-content">
+                            <div class="payment-notice">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Online Payment Only - No COD Available</span>
+                            </div>
+                            <div class="payment-methods">
+                                <div class="payment-method">
+                                    <input type="radio" id="razorpay" name="paymentMethod" value="razorpay" checked>
+                                    <label for="razorpay" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-credit-card"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>Credit/Debit Card</h3>
+                                                <p>Visa, Mastercard, RuPay</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="payment-method">
+                                    <input type="radio" id="upi" name="paymentMethod" value="upi">
+                                    <label for="upi" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-mobile-alt"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>UPI Payment</h3>
+                                                <p>Google Pay, PhonePe, Paytm</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="payment-method">
+                                    <input type="radio" id="netbanking" name="paymentMethod" value="netbanking">
+                                    <label for="netbanking" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-university"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>Net Banking</h3>
+                                                <p>All major banks</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="payment-method">
+                                    <input type="radio" id="wallet" name="paymentMethod" value="wallet">
+                                    <label for="wallet" class="payment-method-label">
+                                        <div class="payment-method-content">
+                                            <div class="payment-method-icon">
+                                                <i class="fas fa-wallet"></i>
+                                            </div>
+                                            <div class="payment-method-info">
+                                                <h3>Digital Wallet</h3>
+                                                <p>Paytm, Mobikwik, Freecharge</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="checkout-section" id="order-summary-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-shopping-bag"></i> Order Summary</h2>
+                        </div>
+                        <div class="section-content">
+                            <div id="order-items" class="order-items">
                                 <!-- Order items will be loaded here -->
                             </div>
-
-                            <div class="summary-totals">
-                                <div class="total-line">
-                                    <span>Subtotal</span>
-                                    <span id="checkout-subtotal">₹0</span>
+                            <div class="order-summary">
+                                <div class="summary-row">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">₹0</span>
                                 </div>
-                                <div class="total-line">
-                                    <span>Shipping</span>
-                                    <span id="checkout-shipping">₹0</span>
+                                <div class="summary-row">
+                                    <span>Shipping:</span>
+                                    <span id="shipping">₹50</span>
                                 </div>
-                                <div class="total-line">
-                                    <span>Tax (GST 18%)</span>
-                                    <span id="checkout-tax">₹0</span>
+                                <div class="summary-row">
+                                    <span>Tax (GST):</span>
+                                    <span id="tax">₹0</span>
                                 </div>
-                                <div id="checkout-discount-row" class="total-line discount" style="display: none;">
-                                    <span>Discount</span>
-                                    <span id="checkout-discount">-₹0</span>
+                                <div class="summary-row total">
+                                    <span>Total:</span>
+                                    <span id="total">₹0</span>
                                 </div>
-                                <hr>
-                                <div class="total-line grand-total">
-                                    <strong>Total</strong>
-                                    <strong id="checkout-total">₹0</strong>
+                            </div>
+                            <div class="coupon-section">
+                                <div class="coupon-input">
+                                    <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                                    <button id="apply-coupon" class="btn btn-outline">Apply</button>
                                 </div>
+                                <div id="coupon-message" class="coupon-message"></div>
+                            </div>
+                            <div class="checkout-actions">
+                                <button id="place-order-btn" class="btn btn-primary btn-large" disabled>
+                                    <i class="fas fa-lock"></i>
+                                    Place Order Securely
+                                </button>
+                                <p class="security-note">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Your payment information is secure and encrypted
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -834,107 +362,64 @@
         </div>
     </footer>
 
-    <!-- Order Success Modal -->
-    <div id="order-success-modal" class="modal">
-        <div class="modal-content order-success-modal">
-            <div class="success-header">
-                <div class="success-icon">
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to Your Account</h2>
+            <div id="login-step-1">
+                <div class="form-group">
+                    <label for="login-contact">Email Address:</label>
+                    <input type="email" id="login-contact" placeholder="Enter your email address" required>
+                </div>
+                <button id="send-otp-btn" class="btn btn-primary btn-full">Send OTP</button>
+            </div>
+            <div id="login-step-2" style="display: none;">
+                <p>OTP sent to <span id="otp-email"></span></p>
+                <div class="form-group">
+                    <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button id="verify-otp-btn" class="btn btn-primary btn-full">Verify OTP</button>
+                <button id="resend-otp-btn" class="btn btn-secondary btn-full">Resend OTP</button>
+            </div>
+            <div id="login-success" style="display: none;">
+                <div class="success-message">
                     <i class="fas fa-check-circle"></i>
+                    <p>Login successful!</p>
                 </div>
-                <h2>Payment Successful!</h2>
-                <p>Thank you for shopping with Rasoiyaa Food</p>
-            </div>
-            <div class="order-details">
-                <div class="order-info">
-                    <h3>Order Information</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Order ID:</label>
-                            <span id="success-order-id">RAS123456</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Payment ID:</label>
-                            <span id="success-payment-id">pay_xxx</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Total Amount:</label>
-                            <span id="success-total">₹0</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Estimated Delivery:</label>
-                            <span id="success-delivery">3-5 business days</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="customer-info">
-                    <h3>Customer Details</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Name:</label>
-                            <span id="success-customer-name">John Doe</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Email:</label>
-                            <span id="success-customer-email">john@example.com</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-items">
-                    <h3>Order Items</h3>
-                    <div id="success-order-items" class="order-items-list">
-                        <!-- Items will be populated here -->
-                    </div>
-                    <div class="order-totals">
-                        <div class="total-line">
-                            <span>Subtotal:</span>
-                            <span id="success-subtotal">₹0</span>
-                        </div>
-                        <div class="total-line">
-                            <span>Shipping:</span>
-                            <span id="success-shipping">₹0</span>
-                        </div>
-                        <div class="total-line">
-                            <span>Tax (GST 18%):</span>
-                            <span id="success-tax">₹0</span>
-                        </div>
-                        <div class="total-line grand-total">
-                            <strong>Total:</strong>
-                            <strong id="success-grand-total">₹0</strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="delivery-info">
-                    <h3>What's Next?</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> Order confirmation email sent</li>
-                        <li><i class="fas fa-file-pdf"></i> Invoice generated and emailed</li>
-                        <li><i class="fas fa-truck"></i> We'll prepare your order within 24 hours</li>
-                        <li><i class="fas fa-box"></i> Track your order in "My Orders"</li>
-                        <li><i class="fas fa-phone"></i> Contact us if you have any questions</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="success-actions">
-                <button class="btn btn-secondary" onclick="downloadInvoice()">
-                    <i class="fas fa-download"></i> Download Invoice
-                </button>
-                <button class="btn btn-outline" onclick="window.location.href='index.html'">
-                    Continue Shopping
-                </button>
-                <button class="btn btn-primary" onclick="window.location.href='index.html'">
-                    Go to Home
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="modal">
+        <div class="modal-content">
+            <div class="order-success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Order Placed Successfully!</h2>
+                <div class="order-details">
+                    <p><strong>Order ID:</strong> <span id="order-id"></span></p>
+                    <p><strong>Total Amount:</strong> <span id="order-total"></span></p>
+                    <p><strong>Payment Status:</strong> <span id="payment-status"></span></p>
+                </div>
+                <div class="success-actions">
+                    <a href="index.html" class="btn btn-primary">Continue Shopping</a>
+                    <a href="#" class="btn btn-secondary" id="track-order">Track Order</a>
+                </div>
+                <p class="confirmation-note">
+                    A confirmation email has been sent to your registered email address.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
     <div id="toast" class="toast"></div>
 
-    <!-- Razorpay Script -->
+    <!-- Razorpay Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-    <!-- Scripts -->
     <script src="script.js"></script>
     <script src="checkout.js"></script>
 </body>

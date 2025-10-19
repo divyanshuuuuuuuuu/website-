@@ -1,52 +1,26 @@
-# 🍲 Rasoiyaa Food - Authentic Indian Snacks E-commerce Website
+# Rasoiyaa Food - Authentic Indian Snacks E-commerce
 
-A modern, fully-functional e-commerce website for authentic Indian snacks with complete cart and checkout functionality.
+A modern e-commerce website for authentic Indian snacks, built with Node.js, Express, and vanilla JavaScript.
 
-## 🌟 Features
+## Features
 
-### 🛒 Shopping Cart System
-- Add/remove products from cart
-- Quantity management with +/- buttons
-- Real-time total calculations
-- Local storage persistence
-- Cart count indicator in header
+- 🛒 Complete e-commerce functionality
+- 📧 OTP-based email authentication
+- 📦 Order management and tracking
+- 💳 Razorpay payment gateway integration
+- 📱 Responsive design
+- 🔍 Advanced product filtering and search
+- 🛡️ Secure API key management
+- 🔒 Payment signature verification
+- 🔔 Webhook support for payment status updates
 
-### 💳 Advanced Checkout Process
-- **4-step wizard checkout**:
-  1. Customer Information
-  2. Shipping Address (with PIN code validation)
-  3. Payment Method (Razorpay integration)
-  4. Order Review & Confirmation
-
-### 📍 Smart Shipping Logic
-- **PIN code-based pricing**:
-  - Satna (485001): ₹30 local delivery
-  - Other areas: ₹60 standard delivery
-  - Orders > ₹500: FREE shipping
-- Real-time shipping cost updates
-
-### 🔐 User Authentication
-- OTP-based email login system
-- Session management
-- User profile management
-- Order history tracking
-
-### 📧 Email Integration
-- Order confirmations via SendGrid
-- Invoice generation and delivery
-- Admin notifications
-
-### 🎨 Modern UI/UX
-- Glassmorphism design with animations
-- Responsive mobile-first design
-- Smooth transitions and hover effects
-- Professional checkout flow
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - npm or yarn
+- SendGrid account for email services
 
 ### Installation
 
@@ -61,13 +35,13 @@ A modern, fully-functional e-commerce website for authentic Indian snacks with c
    npm install
    ```
 
-3. **Configure environment variables**
-   Create a `.env` file in the root directory:
-   ```env
-   SENDGRID_API_KEY=your_sendgrid_api_key
-   RAZORPAY_KEY_ID=your_razorpay_key_id
-   RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-   PORT=8000
+3. **Set up environment variables**
+   ```bash
+   # Copy the example file
+   cp .env.example .env.local
+
+   # Edit .env.local with your actual values
+   # Required: SENDGRID_API_KEY
    ```
 
 4. **Start the development server**
@@ -75,191 +49,186 @@ A modern, fully-functional e-commerce website for authentic Indian snacks with c
    npm start
    ```
 
-5. **Open in browser**
+5. **Open your browser**
    ```
    http://localhost:8000
    ```
 
-## 🧪 Testing
+## Environment Variables
 
-Run the comprehensive test suite:
+Create a `.env.local` file in the root directory with the following variables:
 
-```bash
-# Run all tests
-npm test
+```env
+# SendGrid Email Service (Required)
+SENDGRID_API_KEY=your_sendgrid_api_key_here
+SENDGRID_FROM=your_email@example.com
 
-# Run tests in headed mode (see browser)
-npm run test:headed
-
-# Run tests with UI mode
-npm run test:ui
+# Optional: Add other API keys as needed
+# DATABASE_URL=your_database_url_here
+# STRIPE_SECRET_KEY=your_stripe_key_here
 ```
 
-### Test Coverage
-- ✅ Cart functionality (add, remove, quantity updates)
-- ✅ Checkout process validation
-- ✅ PIN code-based shipping calculations
-- ✅ Form validation and navigation
-- ✅ Empty cart state handling
-- ✅ Payment integration testing
+### Getting API Keys
 
-## 📁 Project Structure
+#### SendGrid (Email Service)
+1. Sign up at [SendGrid](https://sendgrid.com)
+2. Create an API key in Settings > API Keys
+3. Copy the key to your `.env.local` file
+
+#### Razorpay (Payment Gateway)
+1. Sign up at [Razorpay](https://razorpay.com)
+2. Create an account and verify your business
+3. Go to Dashboard > Settings > API Keys
+4. Generate API Key ID and Key Secret
+5. Create a webhook secret for payment verification
+6. Copy all keys to your `.env.local` file
+
+## Security Notes
+
+- Never commit `.env.local` or any file containing real API keys
+- The `.env.example` file is safe to commit (contains placeholder values)
+- API keys are only used server-side and never exposed to the browser
+- Rotate API keys immediately if they are accidentally exposed
+
+## Project Structure
 
 ```
 rosaiya-food/
-├── 📄 HTML Files (14 pages)
-│   ├── index.html          # Homepage with hero banner
-│   ├── shop.html           # Product catalog with filters
-│   ├── cart.html           # Shopping cart page
-│   ├── checkout.html       # 4-step checkout process
-│   ├── login.html          # OTP authentication
-│   └── ... (other static pages)
-├── 📄 JavaScript Files (6 modules)
-│   ├── script.js           # Main application logic
-│   ├── cart.js             # Cart management
-│   ├── checkout.js         # Checkout flow logic
-│   ├── server.js           # Express backend API
-│   └── ... (utility scripts)
-├── 📄 CSS Files
-│   └── styles.css          # Global styles
-├── 🧪 Tests
-│   └── tests/e2e/          # End-to-end test suite
-├── 📄 Configuration
-│   ├── package.json        # Dependencies & scripts
-│   ├── .env               # Environment variables
-│   └── .nojekyll          # GitHub Pages config
-└── 📄 Assets
-    ├── Images (PNG/JPG)   # Product images & logos
-    └── Icons (FontAwesome) # UI icons
+├── server.js              # Main server file
+├── otp-service.js         # Email/OTP service
+├── script.js              # Frontend JavaScript
+├── styles.css             # Styles
+├── *.html                 # HTML pages
+├── .env.example           # Environment template
+├── .gitignore            # Git ignore rules
+└── package.json          # Dependencies
 ```
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Authentication
-- `POST /send-otp` - Send login OTP
-- `POST /verify-otp` - Verify OTP and login
+- `POST /send-otp` - Send OTP to email
+- `POST /verify-otp` - Verify OTP code
 - `POST /logout` - Logout user
 
 ### Orders
-- `POST /create-order` - Create Razorpay order
-- `POST /verify-payment` - Verify payment completion
+- `POST /save-order` - Save order data
+- `POST /send-order-confirmation` - Send order confirmation email
+- `GET /order/:orderId` - Get order details
+- `GET /orders/:contact` - Get user orders
+- `GET /order/:orderId/track` - Get order tracking info
+- `PUT /orders/:orderId` - Update order status
 
-## 💰 Payment Integration
+### Payments (Razorpay)
+- `POST /create-razorpay-order` - Create Razorpay payment order
+- `POST /verify-razorpay-payment` - Verify payment signature
+- `POST /razorpay-webhook` - Handle Razorpay webhooks
 
-### Razorpay Setup
-1. Create account at [Razorpay Dashboard](https://dashboard.razorpay.com)
-2. Get API keys from Settings > API Keys
-3. Add keys to `.env` file
-4. Test payments in sandbox mode
+### Admin
+- `GET /orders` - Get all orders (admin)
+- `GET /admin/stats` - Get admin statistics
 
-### Supported Payment Methods
-- Credit/Debit Cards
-- Net Banking
-- UPI
-- Wallets
+### Utilities
+- `GET /health` - Health check endpoint
 
-## 📧 Email Configuration
+## Deployment
 
-### SendGrid Setup
-1. Create account at [SendGrid](https://sendgrid.com)
-2. Generate API key
-3. Verify sender email
-4. Add API key to `.env`
+### Vercel (Recommended)
 
-## 🚀 Deployment
+1. **Connect to GitHub**
+   - Push your code to GitHub
+   - Import project in Vercel dashboard
 
-### Option 1: GitHub Pages (Frontend Only)
+2. **Add Environment Variables**
+   - In Vercel project settings, add:
+     - `SENDGRID_API_KEY`
+     - `SENDGRID_FROM`
+
+3. **Deploy**
+   - Vercel will automatically deploy on git push
+
+### Local Development
+
 ```bash
-# Deploy static files to GitHub Pages
-# Backend needs separate hosting (Heroku, Railway, etc.)
+npm start
+# Server runs on http://localhost:8000
 ```
 
-### Option 2: Full Stack Deployment
-1. **Frontend**: Deploy static files to GitHub Pages/Netlify/Vercel
-2. **Backend**: Deploy Node.js server to Heroku/Railway/Render
-3. **Database**: Add MongoDB/PostgreSQL for production data
+## Razorpay Integration Details
 
-### Environment Variables for Production
+### Backend Requirements
+
+**Dependencies:**
+```json
+{
+  "razorpay": "^2.9.2",
+  "crypto": "built-in"
+}
+```
+
+**Environment Variables:**
 ```env
-NODE_ENV=production
-SENDGRID_API_KEY=your_production_key
-RAZORPAY_KEY_ID=your_production_key
-RAZORPAY_KEY_SECRET=your_production_secret
-CORS_ORIGIN=https://yourdomain.com
+RAZORPAY_KEY_ID=rzp_test_your_key_id
+RAZORPAY_KEY_SECRET=your_secret_key
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
 ```
 
-## 🎯 Key Features Implemented
+### Security Features
 
-### Cart Management
-- ✅ Persistent cart with localStorage
-- ✅ Real-time quantity updates
-- ✅ Automatic total calculations
-- ✅ Cart icon with item count
+- **Signature Verification**: All payments are verified using HMAC-SHA256
+- **Webhook Validation**: Webhooks are authenticated with secret keys
+- **Server-side Processing**: All payment logic runs on the server
+- **No Client-side Secrets**: API keys never exposed to frontend
 
-### Checkout Flow
-- ✅ Multi-step form validation
-- ✅ PIN code shipping logic
-- ✅ Payment gateway integration
-- ✅ Order confirmation emails
+### Webhook Configuration
 
-### User Experience
-- ✅ Responsive design (mobile-first)
-- ✅ Loading states and animations
-- ✅ Error handling and validation
-- ✅ Toast notifications
+1. In Razorpay Dashboard > Settings > Webhooks
+2. Create webhook with URL: `https://yourdomain.com/razorpay-webhook`
+3. Select events: `payment.captured`, `payment.failed`
+4. Set webhook secret and add to environment variables
 
-### Security
-- ✅ OTP-based authentication
-- ✅ Secure payment processing
-- ✅ Input validation and sanitization
-- ✅ CORS protection
+### Hosting Prerequisites
 
-## 🐛 Troubleshooting
+- **HTTPS Required**: Razorpay requires SSL certificate
+- **Domain Verification**: Webhooks need verified domain
+- **Firewall**: Allow Razorpay IP addresses for webhooks
+- **Server Requirements**: Node.js 14+, stable internet connection
 
-### Common Issues
+### Payment Flow
 
-**Server won't start**
-```bash
-# Check Node.js version
-node --version
+1. **Order Creation**: Frontend requests order creation
+2. **Razorpay Order**: Server creates order via Razorpay API
+3. **Checkout**: User completes payment on Razorpay's secure gateway
+4. **Verification**: Server verifies payment signature
+5. **Confirmation**: Order status updated and confirmation sent
 
-# Clear node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-```
+### Testing
 
-**Tests failing**
-```bash
-# Install Playwright browsers
-npx playwright install
+Use Razorpay test credentials for development:
+- Test Key ID: `rzp_test_*`
+- Test Secret: Available in dashboard
+- Test Cards: Use Razorpay's test card numbers
 
-# Run tests in debug mode
-npm run test:headed
-```
-
-**Payment not working**
-- Check Razorpay keys in `.env`
-- Ensure correct environment (test/production)
-- Verify webhook endpoints
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-## 📞 Support
+## Security Checklist
+
+- [ ] No API keys in source code
+- [ ] `.env.local` not committed
+- [ ] Environment variables properly configured
+- [ ] API calls routed through server (not direct from frontend)
+- [ ] Sensitive data encrypted in transit
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Support
 
 For support, email rasoiyaafood@gmail.com or create an issue in this repository.
-
----
-
-**Made with ❤️ for authentic Indian snack lovers**
-
-🍲 **Rasoiyaa Food** - स्वाद अपना अपना रसोई का

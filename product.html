@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="product-title">Product Details - Rasoiyaa Food</title>
+    <meta name="description" content="Detailed product information for authentic Indian snacks from Rasoiyaa Food">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header (Same as index.html) -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="logo.png" alt="Rasoiyaa Food Logo" class="logo-img">
+                        <span class="logo-text">RASOIYAA</span>
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for snacks, categories...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <a href="login.html" id="login-btn" class="btn-login">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </a>
+                    <button id="logout-btn" class="btn-logout" style="display:none">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                    <div class="cart-container">
+                        <button id="cart-btn" class="btn-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cart-count">0</span>
+                        </button>
+                        <div id="mini-cart" class="mini-cart">
+                            <div class="mini-cart-header">
+                                <h3>Your Cart</h3>
+                                <button class="close-mini-cart">&times;</button>
+                            </div>
+                            <div id="mini-cart-items" class="mini-cart-items"></div>
+                            <div class="mini-cart-footer">
+                                <div class="mini-cart-total">
+                                    <strong>Total: ₹<span id="mini-cart-total">0</span></strong>
+                                </div>
+                                <div class="mini-cart-actions">
+                                    <a href="cart.html" class="btn btn-secondary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Breadcrumb -->
+        <section class="breadcrumb">
+            <div class="container">
+                <nav class="breadcrumb-nav">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <a href="shop.html">Shop</a>
+                    <span>/</span>
+                    <span id="breadcrumb-product">Product</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Product Details -->
+        <section class="product-details-section">
+            <div class="container">
+                <div class="product-details-container">
+                    <div class="product-gallery">
+                        <div class="main-image">
+                            <img id="main-product-image" src="" alt="Product Image">
+                            <div id="product-badge" class="product-badge"></div>
+                        </div>
+                        <div class="thumbnail-gallery" id="thumbnail-gallery">
+                            <!-- Additional images will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="product-info">
+                        <h1 id="product-name">Product Name</h1>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(4.5) | <a href="#reviews">Write a review</a></span>
+                        </div>
+
+                        <div class="product-price">
+                            <span class="current-price" id="current-price">₹0</span>
+                            <span class="original-price" id="original-price"></span>
+                        </div>
+
+                        <div class="product-meta">
+                            <div class="meta-item">
+                                <strong>Net Weight:</strong> <span id="product-weight"></span>
+                            </div>
+                            <div class="meta-item">
+                                <strong>Availability:</strong> <span id="product-availability"></span>
+                            </div>
+                            <div class="meta-item">
+                                <strong>Category:</strong> <span id="product-category"></span>
+                            </div>
+                        </div>
+
+                        <div class="product-description">
+                            <h3>Description</h3>
+                            <p id="product-description"></p>
+                        </div>
+
+                        <div class="product-ingredients">
+                            <h3>Ingredients</h3>
+                            <p id="product-ingredients"></p>
+                        </div>
+
+                        <div class="product-dietary">
+                            <h3>Dietary Information</h3>
+                            <div class="dietary-tags" id="dietary-tags"></div>
+                        </div>
+
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantity:</label>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" id="decrease-qty">-</button>
+                                <input type="number" id="quantity" value="1" min="1" max="10">
+                                <button class="quantity-btn" id="increase-qty">+</button>
+                            </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <button class="btn btn-primary btn-large" id="add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                            <button class="btn btn-secondary" id="buy-now-btn">
+                                <i class="fas fa-bolt"></i>
+                                Buy Now
+                            </button>
+                        </div>
+
+                        <div class="product-share">
+                            <span>Share:</span>
+                            <a href="#" class="share-link"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="share-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="share-link"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Products -->
+                <section class="related-products">
+                    <h2>You Might Also Like</h2>
+                    <div class="related-products-grid" id="related-products">
+                        <!-- Related products will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Reviews Section -->
+                <section class="reviews-section" id="reviews">
+                    <h2>Customer Reviews</h2>
+                    <div class="reviews-container">
+                        <div class="review-form">
+                            <h3>Write a Review</h3>
+                            <form id="review-form">
+                                <div class="form-group">
+                                    <label for="review-rating">Rating:</label>
+                                    <div class="rating-input">
+                                        <input type="radio" id="star5" name="rating" value="5"><label for="star5">☆</label>
+                                        <input type="radio" id="star4" name="rating" value="4"><label for="star4">☆</label>
+                                        <input type="radio" id="star3" name="rating" value="3"><label for="star3">☆</label>
+                                        <input type="radio" id="star2" name="rating" value="2"><label for="star2">☆</label>
+                                        <input type="radio" id="star1" name="rating" value="1"><label for="star1">☆</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-name">Name:</label>
+                                    <input type="text" id="review-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-email">Email:</label>
+                                    <input type="email" id="review-email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-text">Review:</label>
+                                    <textarea id="review-text" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+
+                        <div class="reviews-list" id="reviews-list">
+                            <!-- Reviews will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Same as index.html) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-conditions.html">Terms & Conditions</a></li>
+                        <li><a href="refund-cancellation.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-phone"></i> +91 8085654059</p>
+                        <p><i class="fas fa-envelope"></i> rasoiyaafood@gmail.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Satna, Madhya Pradesh, India - 485001</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe for updates and offers</p>
+                    <form class="footer-newsletter">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Rasoiyaa Food. All Rights Reserved.</p>
+                <p>Making fresh | natural and home snacks because we want to experience you a true taste of tradition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Load product details when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (productId) {
+                loadProductDetails(productId);
+            } else {
+                // Redirect to shop if no product ID
+                window.location.href = 'shop.html';
+            }
+        });
+    </script>
+</body>
+</html>
