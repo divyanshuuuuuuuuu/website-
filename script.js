@@ -279,36 +279,302 @@ function quickView(productId) {
     };
 }
 
-// Add to Cart Function
-function addToCart(productId) {
+// Add to Cart Function with Enhanced UI and Animations
+function addToCart(productId, quantity = 1) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
+
+    // Show loading state on button
+    const addBtn = document.querySelector(`[onclick="addToCart('${productId}')"]`);
+    if (addBtn) {
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+    }
 
     // Get existing cart from localStorage
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    // Check if product already in cart
+    // Check if product already in cart - if yes, just increase quantity
     const existingItem = cart.find(item => item.id === productId);
     if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity += quantity;
+        showEnhancedToast(`${product.name} quantity updated!`, 'info', product);
     } else {
         cart.push({
             id: product.id,
             name: product.name,
             price: product.price,
             image: product.image,
-            quantity: 1
+            quantity: quantity
         });
+        // Create floating animation effect only for new items
+        createFloatingAnimation(productId);
+        // Show enhanced toast notification
+        showEnhancedToast('Product added to cart!', 'success', product);
+        // Show mini cart popup
+        showMiniCartPopup(product);
     }
 
     // Save cart to localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    // Update cart count
+    // Update cart count with animation
     updateCartCount();
 
-    // Show toast notification
-    showToast('Product added to cart!', 'success');
+    // Reset button after animation
+    setTimeout(() => {
+        if (addBtn) {
+            addBtn.disabled = false;
+            addBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+        }
+    }, 1000);
+}
+
+// Create floating animation when adding to cart
+function createFloatingAnimation(productId) {
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!productCard) return;
+
+    // Create floating element
+    const floatingElement = document.createElement('div');
+    floatingElement.className = 'floating-cart-item';
+    floatingElement.innerHTML = '<i class="fas fa-shopping-cart"></i>';
+
+    // Position it over the product image
+    const productImage = productCard.querySelector('.product-image');
+    const rect = productImage.getBoundingClientRect();
+
+    floatingElement.style.left = rect.left + rect.width / 2 + 'px';
+    floatingElement.style.top = rect.top + rect.height / 2 + 'px';
+
+    document.body.appendChild(floatingElement);
+
+    // Get cart icon position
+    const cartIcon = document.querySelector('.btn-cart');
+    const cartRect = cartIcon.getBoundingClientRect();
+
+    // Animate to cart
+    setTimeout(() => {
+        floatingElement.style.left = cartRect.left + cartRect.width / 2 + 'px';
+        floatingElement.style.top = cartRect.top + cartRect.height / 2 + 'px';
+        floatingElement.style.transform = 'scale(0.5)';
+        floatingElement.style.opacity = '0.8';
+    }, 100);
+
+    // Remove after animation
+    setTimeout(() => {
+        document.body.removeChild(floatingElement);
+    }, 800);
+}
+
+// Mini cart popup functionality
+function showMiniCartPopup(product) {
+    // Remove existing mini cart popup if any
+    const existingPopup = document.querySelector('.cart-popup');
+    if (existingPopup) {
+        existingPopup.remove();
+    }
+
+    // Get current cart
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItem = cart.find(item => item.id === product.id);
+
+    // Create mini cart popup
+    const popup = document.createElement('div');
+    popup.className = 'cart-popup';
+    popup.innerHTML = `
+        <div class="cart-popup-content">
+            <div class="cart-popup-header">
+                <h3><i class="fas fa-shopping-cart"></i> Added to Cart</h3>
+                <button class="cart-popup-close" onclick="closeMiniCartPopup()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="cart-popup-items">
+                <div class="cart-popup-item">
+                    <img src="${product.image}" alt="${product.name}">
+                    <div class="cart-popup-item-info">
+                        <h4>${product.name}</h4>
+                        <p>₹${product.price} × ${cartItem.quantity}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-popup-total">
+                <strong>Total: ₹${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</strong>
+            </div>
+
+            <div class="cart-popup-actions">
+                <button class="btn btn-outline" onclick="closeMiniCartPopup()">Continue Shopping</button>
+                <button class="btn btn-primary" onclick="window.location.href='cart.html'">View Cart</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Show popup with animation
+    setTimeout(() => {
+        popup.classList.add('show');
+    }, 100);
+
+    // Auto close after 5 seconds
+    setTimeout(() => {
+        closeMiniCartPopup();
+    }, 5000);
+}
+
+function closeMiniCartPopup() {
+    const popup = document.querySelector('.cart-popup');
+    if (popup) {
+        popup.classList.remove('show');
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.parentNode.removeChild(popup);
+            }
+        }, 300);
+    }
+}
+
+// Animate quantity change
+function animateQuantityChange(input, newValue) {
+    // Add bounce animation
+    input.style.transform = 'scale(1.1)';
+    input.style.transition = 'transform 0.2s ease';
+
+    setTimeout(() => {
+        input.value = newValue;
+        input.style.transform = 'scale(1)';
+    }, 100);
+}
+
+// Review system functions
+function handleReviewSubmit(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const reviewData = {
+        id: Date.now().toString(),
+        productId: new URLSearchParams(window.location.search).get('id'),
+        name: formData.get('review-name'),
+        email: formData.get('review-email'),
+        rating: formData.get('rating'),
+        text: formData.get('review-text'),
+        date: new Date().toISOString(),
+        verified: localStorage.getItem('userLoggedIn') === 'true'
+    };
+
+    // Get existing reviews
+    let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    reviews.push(reviewData);
+
+    // Save reviews
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+
+    // Reset form
+    event.target.reset();
+
+    // Reload reviews
+    loadReviews();
+
+    // Show success message
+    showToast('Review submitted successfully!', 'success');
+}
+
+function loadReviews() {
+    const reviewsList = document.getElementById('reviews-list');
+    if (!reviewsList) return;
+
+    const productId = new URLSearchParams(window.location.search).get('id');
+    const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    const productReviews = reviews.filter(review => review.productId === productId);
+
+    if (productReviews.length === 0) {
+        reviewsList.innerHTML = '<p class="no-reviews">No reviews yet. Be the first to review this product!</p>';
+        return;
+    }
+
+    reviewsList.innerHTML = productReviews.map(review => `
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <strong>${review.name}</strong>
+                    ${review.verified ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified Purchase</span>' : ''}
+                </div>
+                <div class="review-rating">
+                    ${generateStars(review.rating)}
+                </div>
+            </div>
+            <div class="review-date">
+                ${new Date(review.date).toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })}
+            </div>
+            <div class="review-text">
+                ${review.text}
+            </div>
+        </div>
+    `).join('');
+}
+
+function generateStars(rating) {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+        stars.push('<i class="fas fa-star"></i>');
+    }
+
+    if (hasHalfStar) {
+        stars.push('<i class="fas fa-star-half-alt"></i>');
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+        stars.push('<i class="far fa-star"></i>');
+    }
+
+    return stars.join('');
+}
+
+// Enhanced toast notification
+function showEnhancedToast(message, type = 'info', product = null) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    let toastContent = message;
+
+    // Add product preview for cart additions
+    if (product && type === 'success') {
+        toastContent = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="${product.image}" alt="${product.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 2px;">${product.name}</div>
+                    <div style="font-size: 0.9em; opacity: 0.9;">Added to cart</div>
+                </div>
+            </div>
+        `;
+    }
+
+    toast.innerHTML = toastContent;
+    toast.className = `toast toast-${type} enhanced-toast show`;
+
+    // Add click to view cart functionality
+    if (type === 'success') {
+        toast.style.cursor = 'pointer';
+        toast.onclick = () => {
+            window.location.href = 'cart.html';
+        };
+    }
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
 }
 
 // Update Cart Count
@@ -408,7 +674,11 @@ function loadProductDetails(productId) {
     // Add to cart functionality
     document.getElementById('add-to-cart-btn').addEventListener('click', function() {
         const quantity = parseInt(document.getElementById('quantity').value);
-        addToCart(productId, quantity);
+        if (quantity > 0) {
+            addToCart(productId, quantity);
+        } else {
+            showToast('Please select a valid quantity', 'error');
+        }
     });
 
     // Buy now functionality
@@ -418,12 +688,12 @@ function loadProductDetails(productId) {
         window.location.href = 'checkout.html';
     });
 
-    // Quantity controls
+    // Quantity controls with animations
     document.getElementById('increase-qty').addEventListener('click', function() {
         const qtyInput = document.getElementById('quantity');
         const currentQty = parseInt(qtyInput.value);
         if (currentQty < 10) {
-            qtyInput.value = currentQty + 1;
+            animateQuantityChange(qtyInput, currentQty + 1);
         }
     });
 
@@ -431,7 +701,23 @@ function loadProductDetails(productId) {
         const qtyInput = document.getElementById('quantity');
         const currentQty = parseInt(qtyInput.value);
         if (currentQty > 1) {
-            qtyInput.value = currentQty - 1;
+            animateQuantityChange(qtyInput, currentQty - 1);
+        }
+    });
+
+    // Add input validation for quantity
+    document.getElementById('quantity').addEventListener('input', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > 10) {
+            this.value = 10;
+        }
+    });
+
+    document.getElementById('quantity').addEventListener('blur', function() {
+        if (this.value === '' || parseInt(this.value) < 1) {
+            this.value = 1;
         }
     });
 }
@@ -824,4 +1110,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup OTP input handling
     setupOTPInputs();
+
+    // Review form handling
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', handleReviewSubmit);
+        loadReviews();
+    }
 });
