@@ -115,7 +115,7 @@ function showSection(sectionName) {
             loadDashboardData();
             break;
         case 'products':
-            loadProductsTable();
+            loadAdminProducts(); // Reload products when switching to products section
             break;
         case 'orders':
             loadOrdersTable();
@@ -376,20 +376,53 @@ function loadCustomers() {
 }
 
 function loadAdminProducts() {
-    // Load products from server
+    // Load products from server first, then merge with local products
     fetch('http://localhost:8000/admin/products')
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.success && data.products.length > 0) {
                 adminProducts = data.products;
-                if (currentSection === 'products') {
-                    renderAdminProductsTable();
-                }
+                console.log('Loaded server products:', adminProducts.length);
+            } else {
+                // If no server products, load local products and save them to server
+                console.log('No server products found, loading local products');
+                adminProducts = [...products]; // Copy local products
+
+                // Save local products to server
+                const savePromises = adminProducts.map(product => {
+                    return fetch('http://localhost:8000/admin/products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...product,
+                            id: product.id || Date.now().toString() + Math.random().toString(36).substr(2, 9)
+                        })
+                    });
+                });
+
+                Promise.all(savePromises)
+                    .then(() => {
+                        console.log('Local products saved to server');
+                        loadAdminProducts(); // Reload to get server versions
+                    })
+                    .catch(error => {
+                        console.error('Error saving local products to server:', error);
+                    });
+            }
+
+            if (currentSection === 'products') {
+                renderAdminProductsTable();
             }
         })
         .catch(error => {
             console.error('Error loading admin products:', error);
-            adminProducts = [];
+            // Fallback to local products
+            adminProducts = [...products];
+            console.log('Using local products as fallback:', adminProducts.length);
+
+            if (currentSection === 'products') {
+                renderAdminProductsTable();
+            }
         });
 }
 
@@ -430,6 +463,21 @@ function loadProductsTable() {
 function renderAdminProductsTable(filteredProducts = null) {
     const productsToShow = filteredProducts || adminProducts;
     const container = document.getElementById('products-tbody');
+
+    console.log('Rendering products table with:', productsToShow.length, 'products');
+
+    if (productsToShow.length === 0) {
+        container.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                    <strong>No products found</strong><br>
+                    <small>Click "Add New Product" to create your first product</small>
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
     container.innerHTML = productsToShow.map(product => `
         <tr>
@@ -851,17 +899,23 @@ function handleProductSubmit(event) {
         productData.id = productId;
     }
 
+    console.log('Saving product:', productData);
+
     fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Save response:', data);
         if (data.success) {
             showToast(isEditing ? 'Product updated successfully' : 'Product added successfully');
             closeProductModal();
-            loadAdminProducts();
+            loadAdminProducts(); // Reload products after save
             updateStats();
         } else {
             showToast(data.message || 'Error saving product', 'error');
