@@ -568,6 +568,161 @@ function startOTPTimer() {
     }, 1000);
 }
 
+function verifyOTP() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const verifyBtn = document.getElementById('verify-otp-btn');
+    const btnText = verifyBtn.querySelector('.btn-text');
+    const btnLoader = verifyBtn.querySelector('.btn-loader');
+
+    // Get OTP from inputs
+    let otp = '';
+    otpInputs.forEach(input => {
+        otp += input.value;
+    });
+
+    if (otp.length !== 6) {
+        showToast('Please enter the complete 6-digit code', 'error');
+        return;
+    }
+
+    const email = document.getElementById('otp-email-display').textContent;
+
+    // Show loading state
+    verifyBtn.disabled = true;
+    btnText.textContent = 'Verifying...';
+    btnLoader.style.display = 'inline';
+
+    // Verify OTP request
+    fetch('http://localhost:8000/verify-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ contact: email, otp: otp })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Move to step 3 (success)
+            document.getElementById('login-step-2').classList.remove('active');
+            document.getElementById('login-step-3').classList.add('active');
+
+            // Update progress
+            document.querySelector('[data-step="2"]').classList.remove('active');
+            document.querySelector('[data-step="3"]').classList.add('active');
+
+            // Set user email display
+            document.getElementById('user-email-display').textContent = email;
+
+            // Store login session
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+
+            showToast('Login successful! Welcome to Rasoiyaa Food.', 'success');
+
+            // Auto redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+        } else {
+            showToast(data.message || 'Invalid OTP code', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('OTP verify error:', error);
+        showToast('Failed to verify OTP. Please try again.', 'error');
+    })
+    .finally(() => {
+        // Reset button state
+        verifyBtn.disabled = false;
+        btnText.textContent = 'Verify Code';
+        btnLoader.style.display = 'none';
+    });
+}
+
+function resendOTP() {
+    const email = document.getElementById('otp-email-display').textContent;
+    const resendBtn = document.getElementById('resend-otp-btn');
+    const btnText = resendBtn.querySelector('.btn-text');
+    const btnLoader = resendBtn.querySelector('.btn-loader');
+
+    // Show loading state
+    resendBtn.disabled = true;
+    btnText.textContent = 'Sending...';
+    btnLoader.style.display = 'inline';
+
+    // Resend OTP request
+    fetch('http://localhost:8000/send-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ contact: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Restart timer
+            startOTPTimer();
+            showToast('OTP sent again! Check your email.', 'success');
+        } else {
+            showToast(data.message || 'Failed to resend OTP', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('OTP resend error:', error);
+        showToast('Failed to resend OTP. Please try again.', 'error');
+    })
+    .finally(() => {
+        // Reset button state
+        resendBtn.disabled = false;
+        btnText.textContent = 'Didn\'t receive code? Resend';
+        btnLoader.style.display = 'none';
+    });
+}
+
+// OTP input handling
+function setupOTPInputs() {
+    const otpInputs = document.querySelectorAll('.otp-input');
+
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            // Auto move to next input
+            if (this.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', function(e) {
+            // Handle backspace
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const paste = e.clipboardData.getData('text');
+            const pasteNumbers = paste.replace(/[^0-9]/g, '');
+
+            for (let i = 0; i < Math.min(pasteNumbers.length, otpInputs.length - index); i++) {
+                otpInputs[index + i].value = pasteNumbers[i];
+            }
+
+            // Focus last filled input or next empty one
+            const nextEmpty = Array.from(otpInputs).find((input, i) => i >= index && input.value === '');
+            if (nextEmpty) {
+                nextEmpty.focus();
+            } else {
+                otpInputs[otpInputs.length - 1].focus();
+            }
+        });
+    });
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Load products on shop page
@@ -643,7 +798,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Login functionality
     const sendOtpBtn = document.getElementById('send-otp-btn');
+    const verifyOtpBtn = document.getElementById('verify-otp-btn');
+    const resendOtpBtn = document.getElementById('resend-otp-btn');
+
     if (sendOtpBtn) {
         sendOtpBtn.addEventListener('click', sendOTP);
     }
+
+    if (verifyOtpBtn) {
+        verifyOtpBtn.addEventListener('click', verifyOTP);
+    }
+
+    if (resendOtpBtn) {
+        resendOtpBtn.addEventListener('click', resendOTP);
+    }
+
+    // Setup OTP input handling
+    setupOTPInputs();
 });

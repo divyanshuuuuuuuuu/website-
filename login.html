@@ -504,6 +504,17 @@
                         </div>
 
                         <script>
+                            // Handle success actions
+                            document.getElementById('continue-shopping-btn').addEventListener('click', function() {
+                                window.location.href = 'index.html';
+                            });
+
+                            document.getElementById('go-to-cart-btn').addEventListener('click', function() {
+                                window.location.href = 'cart.html';
+                            });
+                        </script>
+
+                        <script>
                             // Save login details to admin panel
                             const loginEmail = document.getElementById('login-contact').value;
                             if (loginEmail) {
