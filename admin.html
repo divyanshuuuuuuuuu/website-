@@ -183,23 +183,50 @@
                 </div>
 
                 <!-- Products Table -->
-                <div class="products-table-container">
-                    <table class="products-table">
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="products-tbody">
-                            <!-- Products will be loaded here -->
-                        </tbody>
-                    </table>
+                <div class="products-management">
+                    <div class="products-header">
+                        <h3>Product Inventory</h3>
+                        <button id="add-new-product-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add New Product
+                        </button>
+                    </div>
+
+                    <div class="products-filters">
+                        <input type="text" id="product-search" placeholder="Search products..." class="search-input">
+                        <select id="category-filter" class="filter-select">
+                            <option value="">All Categories</option>
+                            <option value="murmura">Murmura</option>
+                            <option value="chips">Chips</option>
+                            <option value="chivda">Chivda</option>
+                            <option value="sweets">Sweets</option>
+                            <option value="namak-para">Namak Para</option>
+                        </select>
+                        <select id="status-filter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="products-table-container">
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-tbody">
+                                <!-- Products will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -468,7 +495,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="product-name">Product Name *</label>
-                        <input type="text" id="product-name" required>
+                        <input type="text" id="product-name" required placeholder="Enter product name">
                     </div>
                     <div class="form-group">
                         <label for="product-category">Category *</label>
@@ -485,16 +512,16 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="product-price">Price (₹) *</label>
-                        <input type="number" id="product-price" step="0.01" required>
+                        <input type="number" id="product-price" step="0.01" required placeholder="0.00">
                     </div>
                     <div class="form-group">
                         <label for="product-original-price">Original Price (₹)</label>
-                        <input type="number" id="product-original-price" step="0.01">
+                        <input type="number" id="product-original-price" step="0.01" placeholder="0.00">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="product-description">Description *</label>
-                    <textarea id="product-description" rows="3" required></textarea>
+                    <textarea id="product-description" rows="3" required placeholder="Describe your product"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -507,8 +534,24 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="product-image">Image URL</label>
-                    <input type="url" id="product-image" placeholder="https://example.com/image.jpg">
+                    <label for="product-image">Product Image *</label>
+                    <div class="image-upload-container">
+                        <input type="file" id="product-image-file" accept="image/*" style="display: none;">
+                        <div class="image-upload-area" id="image-upload-area">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload image</p>
+                                <span>PNG, JPG up to 5MB</span>
+                            </div>
+                            <div class="uploaded-image" id="uploaded-image" style="display: none;">
+                                <img id="preview-image" src="" alt="Preview">
+                                <button type="button" class="remove-image" id="remove-image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="product-image-url">
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -529,23 +572,30 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="product-vegetarian">
-                        <span class="checkmark"></span>
-                        Vegetarian
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="product-vegan">
-                        <span class="checkmark"></span>
-                        Vegan
-                    </label>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="product-vegetarian">
+                            <span class="checkmark"></span>
+                            Vegetarian
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="product-vegan">
+                            <span class="checkmark"></span>
+                            Vegan
+                        </label>
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Product</button>
+                    <button type="submit" class="btn btn-primary" id="save-product-btn">
+                        <span class="btn-text">Save Product</span>
+                        <div class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </button>
                 </div>
             </form>
         </div>

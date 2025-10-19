@@ -18,6 +18,7 @@ app.get('/', (req, res) => {
 const orders = []; // demo order list
 const loginDetails = []; // store login details
 const customerDetails = []; // store customer details
+const products = []; // store products
 
 // CORS for local dev
 try {
@@ -373,6 +374,68 @@ app.post('/save-customer-details', (req, res) => {
 
 app.get('/customer-details', (req, res) => {
     return res.json({ success: true, customerDetails });
+});
+
+// Product management endpoints
+app.get('/admin/products', (req, res) => {
+    return res.json({ success: true, products });
+});
+
+app.post('/admin/products', (req, res) => {
+    const productData = req.body;
+    productData.id = Date.now().toString();
+    productData.createdAt = new Date().toISOString();
+    productData.updatedAt = new Date().toISOString();
+
+    products.push(productData);
+    console.log('[PRODUCT CREATED]', productData);
+
+    return res.json({
+        success: true,
+        product: productData,
+        message: 'Product created successfully'
+    });
+});
+
+app.put('/admin/products/:productId', (req, res) => {
+    const { productId } = req.params;
+    const updateData = req.body;
+
+    const productIndex = products.findIndex(p => p.id === productId);
+    if (productIndex === -1) {
+        return res.json({ success: false, message: 'Product not found' });
+    }
+
+    products[productIndex] = {
+        ...products[productIndex],
+        ...updateData,
+        updatedAt: new Date().toISOString()
+    };
+
+    console.log('[PRODUCT UPDATED]', products[productIndex]);
+
+    return res.json({
+        success: true,
+        product: products[productIndex],
+        message: 'Product updated successfully'
+    });
+});
+
+app.delete('/admin/products/:productId', (req, res) => {
+    const { productId } = req.params;
+
+    const productIndex = products.findIndex(p => p.id === productId);
+    if (productIndex === -1) {
+        return res.json({ success: false, message: 'Product not found' });
+    }
+
+    const deletedProduct = products.splice(productIndex, 1)[0];
+    console.log('[PRODUCT DELETED]', deletedProduct);
+
+    return res.json({
+        success: true,
+        message: 'Product deleted successfully'
+    });
 });
 
 app.put('/orders/:orderId', (req, res) => {

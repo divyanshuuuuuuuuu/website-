@@ -7,6 +7,7 @@ let orders = [];
 let customers = [];
 let loginDetails = [];
 let customerDetails = [];
+let adminProducts = [];
 let charts = {};
 
 // Initialize admin panel
@@ -23,6 +24,7 @@ function initializeAdmin() {
     loadCustomers();
     loadLoginDetails();
     loadCustomerDetails();
+    loadAdminProducts();
     updateStats();
 }
 
@@ -35,37 +37,55 @@ function setupEventListeners() {
             showSection(section);
         });
     });
-    
+
     // Product management
-    document.getElementById('add-product-btn').addEventListener('click', openProductModal);
+    const addProductBtn = document.getElementById('add-product-btn');
+    const addNewProductBtn = document.getElementById('add-new-product-btn');
+
+    if (addProductBtn) addProductBtn.addEventListener('click', openProductModal);
+    if (addNewProductBtn) addNewProductBtn.addEventListener('click', openProductModal);
+
     document.getElementById('product-form').addEventListener('submit', handleProductSubmit);
-    
+
+    // Product filters
+    document.getElementById('product-search')?.addEventListener('input', filterAdminProducts);
+    document.getElementById('category-filter')?.addEventListener('change', filterAdminProducts);
+    document.getElementById('status-filter')?.addEventListener('change', filterAdminProducts);
+
+    // Image upload
+    document.getElementById('image-upload-area')?.addEventListener('click', function() {
+        document.getElementById('product-image-file').click();
+    });
+
+    document.getElementById('product-image-file')?.addEventListener('change', handleImageUpload);
+    document.getElementById('remove-image')?.addEventListener('click', removeImage);
+
     // Order management
     document.getElementById('order-status-filter').addEventListener('change', filterOrders);
     document.getElementById('order-date-filter').addEventListener('change', filterOrders);
-    
+
     // Customer management
     document.getElementById('customer-search').addEventListener('input', searchCustomers);
-    
+
     // Analytics
     document.getElementById('analytics-period').addEventListener('change', updateAnalytics);
     document.getElementById('export-report').addEventListener('click', exportReport);
-    
+
     // Settings
     document.querySelectorAll('.settings-form').forEach(form => {
         form.addEventListener('submit', handleSettingsSubmit);
     });
-    
+
     // Logout
     document.getElementById('admin-logout').addEventListener('click', logout);
-    
+
     // Close modals
     document.querySelectorAll('.close').forEach(closeBtn => {
         closeBtn.addEventListener('click', function() {
             this.closest('.modal').style.display = 'none';
         });
     });
-    
+
     // Close modals when clicking outside
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
@@ -355,6 +375,24 @@ function loadCustomers() {
     customers = Array.from(customerMap.values());
 }
 
+function loadAdminProducts() {
+    // Load products from server
+    fetch('http://localhost:8000/admin/products')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                adminProducts = data.products;
+                if (currentSection === 'products') {
+                    renderAdminProductsTable();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading admin products:', error);
+            adminProducts = [];
+        });
+}
+
 function loadLoginDetails() {
     // Load login details from server
     fetch('http://localhost:8000/login-details')
@@ -386,18 +424,23 @@ function loadCustomerDetails() {
 }
 
 function loadProductsTable() {
+    renderAdminProductsTable();
+}
+
+function renderAdminProductsTable(filteredProducts = null) {
+    const productsToShow = filteredProducts || adminProducts;
     const container = document.getElementById('products-tbody');
-    
-    container.innerHTML = products.map(product => `
+
+    container.innerHTML = productsToShow.map(product => `
         <tr>
             <td>
-                <img src="${product.image}" alt="${product.name}" class="product-thumb">
+                <img src="${product.image || '/placeholder.png'}" alt="${product.name}" class="product-thumb" onerror="this.src='/placeholder.png'">
             </td>
             <td>${product.name}</td>
             <td>${product.category}</td>
             <td>₹${product.price}</td>
             <td>In Stock</td>
-            <td><span class="status-badge status-${product.status}">${product.status}</span></td>
+            <td><span class="status-badge status-${product.status || 'active'}">${product.status || 'active'}</span></td>
             <td>
                 <button class="btn btn-sm btn-primary" onclick="editProduct('${product.id}')">
                     <i class="fas fa-edit"></i>
@@ -408,6 +451,22 @@ function loadProductsTable() {
             </td>
         </tr>
     `).join('');
+}
+
+function filterAdminProducts() {
+    const searchTerm = document.getElementById('product-search').value.toLowerCase();
+    const categoryFilter = document.getElementById('category-filter').value;
+    const statusFilter = document.getElementById('status-filter').value;
+
+    let filtered = adminProducts.filter(product => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+        const matchesCategory = !categoryFilter || product.category === categoryFilter;
+        const matchesStatus = !statusFilter || product.status === statusFilter;
+
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
+
+    renderAdminProductsTable(filtered);
 }
 
 function loadOrdersTable() {
@@ -720,16 +779,23 @@ function openProductModal(productId = null) {
     const modal = document.getElementById('product-modal');
     const title = document.getElementById('product-modal-title');
     const form = document.getElementById('product-form');
-    
+
+    // Reset form
+    form.reset();
+    form.dataset.productId = productId || '';
+
+    // Reset image upload
+    removeImage();
+
+    // Reset button text
+    document.getElementById('save-product-btn').querySelector('.btn-text').textContent = 'Save Product';
+
     if (productId) {
-        const product = products.find(p => p.id === productId);
         title.textContent = 'Edit Product';
-        populateProductForm(product);
     } else {
         title.textContent = 'Add New Product';
-        form.reset();
     }
-    
+
     modal.style.display = 'block';
 }
 
@@ -750,10 +816,17 @@ function populateProductForm(product) {
 
 function handleProductSubmit(event) {
     event.preventDefault();
-    
-    const formData = new FormData(event.target);
+
+    const saveBtn = document.getElementById('save-product-btn');
+    const btnText = saveBtn.querySelector('.btn-text');
+    const btnLoader = saveBtn.querySelector('.btn-loader');
+
+    // Show loading state
+    saveBtn.disabled = true;
+    btnText.textContent = 'Saving...';
+    btnLoader.style.display = 'inline';
+
     const productData = {
-        id: document.getElementById('product-name').value.toLowerCase().replace(/\s+/g, '-'),
         name: document.getElementById('product-name').value,
         category: document.getElementById('product-category').value,
         price: parseFloat(document.getElementById('product-price').value),
@@ -761,26 +834,87 @@ function handleProductSubmit(event) {
         description: document.getElementById('product-description').value,
         weight: document.getElementById('product-weight').value,
         ingredients: document.getElementById('product-ingredients').value,
-        image: document.getElementById('product-image').value,
+        image: document.getElementById('product-image-url').value,
         badge: document.getElementById('product-badge').value,
         status: document.getElementById('product-status').value,
         vegetarian: document.getElementById('product-vegetarian').checked,
         vegan: document.getElementById('product-vegan').checked
     };
-    
-    // Save product (in real app, this would be sent to server)
-    const existingIndex = products.findIndex(p => p.id === productData.id);
-    if (existingIndex >= 0) {
-        products[existingIndex] = productData;
-        showToast('Product updated successfully');
-    } else {
-        products.push(productData);
-        showToast('Product added successfully');
+
+    const productId = document.getElementById('product-form').dataset.productId;
+    const isEditing = !!productId;
+
+    const url = isEditing ? `http://localhost:8000/admin/products/${productId}` : 'http://localhost:8000/admin/products';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    if (isEditing) {
+        productData.id = productId;
     }
-    
-    closeProductModal();
-    loadProductsTable();
-    updateStats();
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(isEditing ? 'Product updated successfully' : 'Product added successfully');
+            closeProductModal();
+            loadAdminProducts();
+            updateStats();
+        } else {
+            showToast(data.message || 'Error saving product', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving product:', error);
+        showToast('Error saving product', 'error');
+    })
+    .finally(() => {
+        // Reset loading state
+        saveBtn.disabled = false;
+        btnText.textContent = 'Save Product';
+        btnLoader.style.display = 'none';
+    });
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file', 'error');
+        return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Image size should be less than 5MB', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imageUrl = e.target.result;
+
+        // Show preview
+        document.getElementById('preview-image').src = imageUrl;
+        document.getElementById('uploaded-image').style.display = 'block';
+        document.getElementById('image-upload-area').querySelector('.upload-placeholder').style.display = 'none';
+
+        // Store base64 data
+        document.getElementById('product-image-url').value = imageUrl;
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    document.getElementById('product-image-file').value = '';
+    document.getElementById('product-image-url').value = '';
+    document.getElementById('uploaded-image').style.display = 'none';
+    document.getElementById('image-upload-area').querySelector('.upload-placeholder').style.display = 'flex';
 }
 
 function closeProductModal() {
@@ -788,16 +922,58 @@ function closeProductModal() {
 }
 
 function editProduct(productId) {
+    const product = adminProducts.find(p => p.id === productId);
+    if (!product) return;
+
     openProductModal(productId);
+
+    // Populate form with existing data
+    document.getElementById('product-name').value = product.name;
+    document.getElementById('product-category').value = product.category;
+    document.getElementById('product-price').value = product.price;
+    document.getElementById('product-original-price').value = product.originalPrice || '';
+    document.getElementById('product-description').value = product.description;
+    document.getElementById('product-weight').value = product.weight || '';
+    document.getElementById('product-ingredients').value = product.ingredients || '';
+    document.getElementById('product-badge').value = product.badge || '';
+    document.getElementById('product-status').value = product.status || 'active';
+    document.getElementById('product-vegetarian').checked = product.vegetarian || false;
+    document.getElementById('product-vegan').checked = product.vegan || false;
+
+    // Handle image
+    if (product.image) {
+        document.getElementById('preview-image').src = product.image;
+        document.getElementById('uploaded-image').style.display = 'block';
+        document.getElementById('image-upload-area').querySelector('.upload-placeholder').style.display = 'none';
+        document.getElementById('product-image-url').value = product.image;
+    }
+
+    document.getElementById('product-modal-title').textContent = 'Edit Product';
+    document.getElementById('save-product-btn').querySelector('.btn-text').textContent = 'Update Product';
 }
 
 function deleteProduct(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        products = products.filter(p => p.id !== productId);
-        loadProductsTable();
-        updateStats();
-        showToast('Product deleted successfully');
+    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+        return;
     }
+
+    fetch(`http://localhost:8000/admin/products/${productId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Product deleted successfully');
+            loadAdminProducts();
+            updateStats();
+        } else {
+            showToast(data.message || 'Error deleting product', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting product:', error);
+        showToast('Error deleting product', 'error');
+    });
 }
 
 // Order Management Functions

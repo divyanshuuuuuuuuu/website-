@@ -495,36 +495,45 @@
                         <div class="success-icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h2>Login Successful!</h2>
-                        <p>Welcome to Rasoiyaa Food. You can now start shopping!</p>
+                        <h2>Almost There!</h2>
+                        <p>Please complete your profile to continue shopping.</p>
 
                         <!-- Customer Details Form -->
-                        <div class="customer-details-form" style="background: #f8f9fa; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
-                            <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.1rem; text-align: center;">Complete Your Profile</h3>
+                        <div class="customer-details-form" style="background: #fff; border: 2px solid #667eea; padding: 1.5rem; border-radius: 10px; margin: 1rem 0; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);">
+                            <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.2rem; text-align: center; color: #667eea;">
+                                <i class="fas fa-user-edit" style="margin-right: 0.5rem;"></i>
+                                Complete Your Profile
+                            </h3>
+                            <p style="text-align: center; color: #666; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                                We need some basic information to provide you with the best shopping experience.
+                            </p>
                             <form id="customer-details-form">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                                     <div class="form-group">
-                                        <label for="customer-first-name" style="font-size: 0.9rem; color: #666;">First Name *</label>
-                                        <input type="text" id="customer-first-name" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                                        <label for="customer-first-name" style="font-size: 0.9rem; color: #333; font-weight: 500;">First Name *</label>
+                                        <input type="text" id="customer-first-name" required style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;" placeholder="Enter your first name">
                                     </div>
                                     <div class="form-group">
-                                        <label for="customer-last-name" style="font-size: 0.9rem; color: #666;">Last Name *</label>
-                                        <input type="text" id="customer-last-name" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                                        <label for="customer-last-name" style="font-size: 0.9rem; color: #333; font-weight: 500;">Last Name *</label>
+                                        <input type="text" id="customer-last-name" required style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;" placeholder="Enter your last name">
                                     </div>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 1rem;">
-                                    <label for="customer-phone" style="font-size: 0.9rem; color: #666;">Phone Number *</label>
-                                    <input type="tel" id="customer-phone" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                                    <label for="customer-phone" style="font-size: 0.9rem; color: #333; font-weight: 500;">Phone Number *</label>
+                                    <input type="tel" id="customer-phone" required style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;" placeholder="Enter your phone number">
                                 </div>
-                                <div class="form-group" style="margin-bottom: 1rem;">
-                                    <label for="customer-address" style="font-size: 0.9rem; color: #666;">Address *</label>
-                                    <textarea id="customer-address" required rows="3" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"></textarea>
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
+                                    <label for="customer-address" style="font-size: 0.9rem; color: #333; font-weight: 500;">Delivery Address *</label>
+                                    <textarea id="customer-address" required rows="3" style="width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 1rem; resize: vertical; transition: border-color 0.3s;" placeholder="Enter your complete delivery address"></textarea>
                                 </div>
-                                <button type="submit" style="width: 100%; padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Save Details</button>
+                                <button type="submit" style="width: 100%; padding: 0.875rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: transform 0.2s;">
+                                    <i class="fas fa-save" style="margin-right: 0.5rem;"></i>
+                                    Save & Continue Shopping
+                                </button>
                             </form>
                         </div>
 
-                        <div class="success-actions">
+                        <div class="success-actions" id="success-actions" style="display: none;">
                             <button id="continue-shopping-btn" class="btn-login-primary">Continue Shopping</button>
                             <button id="go-to-cart-btn" class="btn-login-secondary">View Cart</button>
                         </div>
@@ -578,12 +587,22 @@
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify(formData)
                                     }).then(() => {
-                                        showToast('Profile details saved successfully!', 'success');
-                                        customerForm.style.display = 'none';
+                                        showToast('Profile completed successfully!', 'success');
+                                        // Hide form and show success actions
+                                        customerForm.closest('.customer-details-form').style.display = 'none';
+                                        document.getElementById('success-actions').style.display = 'flex';
+                                        // Update status
+                                        const statusElement = document.querySelector('.account-info p:last-child span');
+                                        if (statusElement) {
+                                            statusElement.textContent = 'Active Member';
+                                            statusElement.style.color = '#27ae60';
+                                        }
                                     }).catch(error => {
                                         console.error('Error saving customer details:', error);
-                                        showToast('Details saved locally', 'info');
-                                        customerForm.style.display = 'none';
+                                        showToast('Profile saved locally', 'info');
+                                        // Still show success actions
+                                        customerForm.closest('.customer-details-form').style.display = 'none';
+                                        document.getElementById('success-actions').style.display = 'flex';
                                     });
                                 });
                             }
