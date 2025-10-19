@@ -594,11 +594,10 @@ function loadLoginDetailsTable() {
     container.innerHTML = loginDetails.map(login => `
         <tr>
             <td>${login.email}</td>
-            <td>${login.firstName && login.lastName ? `${login.firstName} ${login.lastName}` : 'N/A'}</td>
-            <td>${login.phone || 'N/A'}</td>
-            <td>${formatAddress(login)}</td>
             <td>${new Date(login.loginTime).toLocaleString()}</td>
-            <td>${getDeviceInfo(login.userAgent)}</td>
+            <td>${login.deviceType || 'Unknown'}</td>
+            <td>${login.browser || 'Unknown'}</td>
+            <td>${login.loginMethod || 'OTP'}</td>
             <td>
                 <button class="btn btn-sm btn-primary" onclick="viewLoginDetail('${login.id}')">
                     <i class="fas fa-eye"></i>
@@ -635,19 +634,14 @@ function viewLoginDetail(loginId) {
     const login = loginDetails.find(l => l.id === loginId);
     if (!login) return;
 
-    const fullAddress = formatAddress(login);
-
     alert(`Complete Login Details:
 
 Email: ${login.email}
-Name: ${login.firstName && login.lastName ? `${login.firstName} ${login.lastName}` : 'N/A'}
-Phone: ${login.phone || 'N/A'}
-Address: ${fullAddress}
-Delivery Instructions: ${login.deliveryInstructions || 'N/A'}
-
 Login Time: ${new Date(login.loginTime).toLocaleString()}
+Device Type: ${login.deviceType || 'Unknown'}
+Browser: ${login.browser || 'Unknown'}
+Login Method: ${login.loginMethod || 'OTP'}
 IP Address: ${login.ipAddress || 'N/A'}
-Device/Browser: ${getDeviceInfo(login.userAgent)}
 User Agent: ${login.userAgent || 'N/A'}`);
 }
 

@@ -609,6 +609,28 @@ function generateStars(rating) {
     return stars.join('');
 }
 
+// Helper functions for device and browser detection
+function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/mobile/i.test(ua)) return 'Mobile';
+    if (/tablet/i.test(ua)) return 'Tablet';
+    return 'Desktop';
+}
+
+function getBrowserInfo() {
+    const ua = navigator.userAgent;
+    let browser = 'Unknown';
+
+    if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
+    else if (ua.includes('Firefox')) browser = 'Firefox';
+    else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+    else if (ua.includes('Edg')) browser = 'Edge';
+    else if (ua.includes('Opera') || ua.includes('OPR')) browser = 'Opera';
+    else if (ua.includes('MSIE') || ua.includes('Trident')) browser = 'Internet Explorer';
+
+    return browser;
+}
+
 // Enhanced toast notification
 function showEnhancedToast(message, type = 'info', product = null) {
     const toast = document.getElementById('toast');
@@ -1022,6 +1044,24 @@ function verifyOTP() {
         console.log('Verification response:', data); // Debug log
 
         if (data.success) {
+            // Save login details to admin panel
+            fetch('http://localhost:8000/save-login-details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    loginTime: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    deviceType: getDeviceType(),
+                    browser: getBrowserInfo(),
+                    loginMethod: 'OTP'
+                })
+            }).then(() => {
+                console.log('Login details saved to admin panel');
+            }).catch(error => {
+                console.error('Error saving login details:', error);
+            });
+
             // Move to step 3 (success)
             document.getElementById('login-step-2').classList.remove('active');
             document.getElementById('login-step-3').classList.add('active');
