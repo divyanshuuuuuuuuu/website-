@@ -483,6 +483,91 @@ function createRelatedProductCard(product) {
     return card;
 }
 
+// Login functionality
+function sendOTP() {
+    const emailInput = document.getElementById('login-contact');
+    const email = emailInput.value.trim();
+    const sendBtn = document.getElementById('send-otp-btn');
+    const btnText = sendBtn.querySelector('.btn-text');
+    const btnLoader = sendBtn.querySelector('.btn-loader');
+
+    if (!email) {
+        showToast('Please enter your email address', 'error');
+        return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
+
+    // Show loading state
+    sendBtn.disabled = true;
+    btnText.textContent = 'Sending...';
+    btnLoader.style.display = 'inline';
+
+    // Send OTP request
+    fetch('http://localhost:8000/send-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ contact: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Move to step 2
+            document.getElementById('login-step-1').classList.remove('active');
+            document.getElementById('login-step-2').classList.add('active');
+
+            // Update progress
+            document.querySelector('[data-step="1"]').classList.remove('active');
+            document.querySelector('[data-step="2"]').classList.add('active');
+
+            // Set email display
+            document.getElementById('otp-email-display').textContent = email;
+
+            // Start OTP timer
+            startOTPTimer();
+
+            showToast('OTP sent successfully! Check your email.', 'success');
+        } else {
+            showToast(data.message || 'Failed to send OTP', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('OTP send error:', error);
+        showToast('Failed to send OTP. Please try again.', 'error');
+    })
+    .finally(() => {
+        // Reset button state
+        sendBtn.disabled = false;
+        btnText.textContent = 'Send Login Code';
+        btnLoader.style.display = 'none';
+    });
+}
+
+function startOTPTimer() {
+    let timeLeft = 300; // 5 minutes
+    const timerElement = document.getElementById('otp-timer');
+
+    const timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            timerElement.textContent = '00:00';
+            showToast('OTP expired. Please request a new one.', 'error');
+        }
+        timeLeft--;
+    }, 1000);
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     // Load products on shop page
@@ -554,5 +639,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('search-input').value = '';
             loadProducts();
         });
+    }
+
+    // Login functionality
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    if (sendOtpBtn) {
+        sendOtpBtn.addEventListener('click', sendOTP);
     }
 });
