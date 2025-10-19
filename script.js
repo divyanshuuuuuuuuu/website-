@@ -1117,4 +1117,36 @@ document.addEventListener('DOMContentLoaded', function() {
         reviewForm.addEventListener('submit', handleReviewSubmit);
         loadReviews();
     }
+
+    // Check login status first
+    checkLoginStatus();
+
+    // User menu dropdown functionality
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
+
+    // Logout functionality
+    const logoutBtn = document.getElementById('logout-btn');
+    const logoutBtnNav = document.getElementById('logout-btn-nav');
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+    if (logoutBtnNav) {
+        logoutBtnNav.addEventListener('click', logout);
+    }
 });

@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 // Simple in-memory stores (replace with DB in production)
 const orders = []; // demo order list
 const loginDetails = []; // store login details
+const customerDetails = []; // store customer details
 
 // CORS for local dev
 try {
@@ -333,6 +334,45 @@ app.get('/orders', (req, res) => {
 
 app.get('/login-details', (req, res) => {
     return res.json({ success: true, loginDetails });
+});
+
+// Save customer details
+app.post('/save-customer-details', (req, res) => {
+    const { firstName, lastName, phone, address, email } = req.body || {};
+
+    if (!email) {
+        return res.json({ success: false, message: 'Email required' });
+    }
+
+    const customerDetail = {
+        id: Date.now().toString(),
+        firstName: firstName || '',
+        lastName: lastName || '',
+        phone: phone || '',
+        address: address || '',
+        email: email,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+
+    // Check if customer already exists, update if so
+    const existingIndex = customerDetails.findIndex(c => c.email === email);
+    if (existingIndex >= 0) {
+        customerDetails[existingIndex] = { ...customerDetails[existingIndex], ...customerDetail };
+    } else {
+        customerDetails.push(customerDetail);
+    }
+
+    console.log('[CUSTOMER DETAILS SAVED]', customerDetail);
+
+    return res.json({
+        success: true,
+        message: 'Customer details saved successfully'
+    });
+});
+
+app.get('/customer-details', (req, res) => {
+    return res.json({ success: true, customerDetails });
 });
 
 app.put('/orders/:orderId', (req, res) => {

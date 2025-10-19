@@ -6,6 +6,7 @@ let products = [];
 let orders = [];
 let customers = [];
 let loginDetails = [];
+let customerDetails = [];
 let charts = {};
 
 // Initialize admin panel
@@ -21,6 +22,7 @@ function initializeAdmin() {
     loadOrders();
     loadCustomers();
     loadLoginDetails();
+    loadCustomerDetails();
     updateStats();
 }
 
@@ -368,6 +370,21 @@ function loadLoginDetails() {
         });
 }
 
+function loadCustomerDetails() {
+    // Load customer details from server
+    fetch('http://localhost:8000/customer-details')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                customerDetails = data.customerDetails;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading customer details:', error);
+            customerDetails = [];
+        });
+}
+
 function loadProductsTable() {
     const container = document.getElementById('products-tbody');
     
@@ -419,20 +436,49 @@ function loadOrdersTable() {
 function loadCustomersTable() {
     const container = document.getElementById('customers-tbody');
 
-    container.innerHTML = customers.map(customer => `
+    container.innerHTML = customerDetails.map(customer => `
         <tr>
-            <td>${customer.contact}</td>
-            <td>${customer.orders}</td>
-            <td>₹${customer.totalSpent}</td>
-            <td>${customer.lastOrder ? new Date(customer.lastOrder).toLocaleDateString() : 'N/A'}</td>
-            <td><span class="status-badge status-${customer.status}">${customer.status}</span></td>
+            <td>${customer.firstName} ${customer.lastName}</td>
+            <td>${customer.email}</td>
+            <td>${customer.phone}</td>
+            <td>${customer.address}</td>
+            <td>${getCustomerOrderCount(customer.email)}</td>
+            <td>₹${getCustomerTotalSpent(customer.email)}</td>
+            <td><span class="status-badge status-active">Active</span></td>
             <td>
-                <button class="btn btn-sm btn-primary" onclick="viewCustomer('${customer.contact}')">
+                <button class="btn btn-sm btn-primary" onclick="viewCustomerDetails('${customer.email}')">
                     <i class="fas fa-eye"></i>
                 </button>
             </td>
         </tr>
     `).join('');
+}
+
+function getCustomerOrderCount(email) {
+    return orders.filter(order => order.shipping?.email === email).length;
+}
+
+function getCustomerTotalSpent(email) {
+    return orders
+        .filter(order => order.shipping?.email === email)
+        .reduce((total, order) => total + order.total, 0);
+}
+
+function viewCustomerDetails(email) {
+    const customer = customerDetails.find(c => c.email === email);
+    if (!customer) return;
+
+    const customerOrders = orders.filter(order => order.shipping?.email === email);
+    const totalSpent = customerOrders.reduce((sum, order) => sum + order.total, 0);
+
+    alert(`Customer Details:
+Name: ${customer.firstName} ${customer.lastName}
+Email: ${customer.email}
+Phone: ${customer.phone}
+Address: ${customer.address}
+Total Orders: ${customerOrders.length}
+Total Spent: ₹${totalSpent}
+Member Since: ${new Date(customer.createdAt).toLocaleDateString()}`);
 }
 
 function loadLoginDetailsTable() {

@@ -498,12 +498,96 @@
                         <h2>Login Successful!</h2>
                         <p>Welcome to Rasoiyaa Food. You can now start shopping!</p>
 
+                        <!-- Customer Details Form -->
+                        <div class="customer-details-form" style="background: #f8f9fa; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                            <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.1rem; text-align: center;">Complete Your Profile</h3>
+                            <form id="customer-details-form">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="form-group">
+                                        <label for="customer-first-name" style="font-size: 0.9rem; color: #666;">First Name *</label>
+                                        <input type="text" id="customer-first-name" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="customer-last-name" style="font-size: 0.9rem; color: #666;">Last Name *</label>
+                                        <input type="text" id="customer-last-name" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label for="customer-phone" style="font-size: 0.9rem; color: #666;">Phone Number *</label>
+                                    <input type="tel" id="customer-phone" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label for="customer-address" style="font-size: 0.9rem; color: #666;">Address *</label>
+                                    <textarea id="customer-address" required rows="3" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"></textarea>
+                                </div>
+                                <button type="submit" style="width: 100%; padding: 0.75rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Save Details</button>
+                            </form>
+                        </div>
+
                         <div class="success-actions">
                             <button id="continue-shopping-btn" class="btn-login-primary">Continue Shopping</button>
                             <button id="go-to-cart-btn" class="btn-login-secondary">View Cart</button>
                         </div>
 
                         <script>
+                            // Store login details in localStorage
+                            const userEmail = document.getElementById('login-contact').value;
+                            if (userEmail) {
+                                localStorage.setItem('userLoggedIn', 'true');
+                                localStorage.setItem('userEmail', userEmail);
+                                localStorage.setItem('userLoginTime', new Date().toISOString());
+
+                                // Update display email
+                                const emailDisplay = document.getElementById('user-email-display');
+                                if (emailDisplay) emailDisplay.textContent = userEmail;
+
+                                // Send login details to server for admin tracking
+                                fetch('http://localhost:8000/save-login-details', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        email: userEmail,
+                                        loginTime: new Date().toISOString(),
+                                        userAgent: navigator.userAgent
+                                    })
+                                }).catch(error => console.error('Error saving login details:', error));
+                            }
+                        </script>
+
+                        <script>
+                            // Handle customer details form
+                            const customerForm = document.getElementById('customer-details-form');
+                            if (customerForm) {
+                                customerForm.addEventListener('submit', function(e) {
+                                    e.preventDefault();
+
+                                    const formData = {
+                                        firstName: document.getElementById('customer-first-name').value,
+                                        lastName: document.getElementById('customer-last-name').value,
+                                        phone: document.getElementById('customer-phone').value,
+                                        address: document.getElementById('customer-address').value,
+                                        email: document.getElementById('login-contact').value
+                                    };
+
+                                    // Save to localStorage
+                                    localStorage.setItem('userDetails', JSON.stringify(formData));
+
+                                    // Send to server for admin panel
+                                    fetch('http://localhost:8000/save-customer-details', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(formData)
+                                    }).then(() => {
+                                        showToast('Profile details saved successfully!', 'success');
+                                        customerForm.style.display = 'none';
+                                    }).catch(error => {
+                                        console.error('Error saving customer details:', error);
+                                        showToast('Details saved locally', 'info');
+                                        customerForm.style.display = 'none';
+                                    });
+                                });
+                            }
+
                             // Handle success actions
                             document.getElementById('continue-shopping-btn').addEventListener('click', function() {
                                 window.location.href = 'index.html';
